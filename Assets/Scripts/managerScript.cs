@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,13 +7,17 @@ public class managerScript : MonoBehaviour {
 
 	public static managerScript manager;
 	public GameObject paddlePrefab;
+	public GameObject plus1Prefab;
+	public Text timerText;
 
 	bool paused = false;
 	int pausedPlayer = 0;
 	int playerNum;
+	float currentTime = 0;
 
 	List<GameObject> activeChars;
 	List<GameObject> paddles;
+	int[] playerPoints;
 
 	// Use this for initialization
 	void Start () {
@@ -25,6 +30,9 @@ public class managerScript : MonoBehaviour {
 		}
 
 		playerNum = settingsScript.settings.characters.Length;
+		playerPoints = new int[playerNum];
+
+		currentTime = settingsScript.settings.matchTime;
 
 		float angDiv = 360.0f/(float)playerNum;
 		float startAngle;
@@ -100,6 +108,10 @@ public class managerScript : MonoBehaviour {
 					break;
 				}
 			}
+			if (currentTime > 0) {
+				currentTime -= Time.deltaTime;
+				timerText.text = currentTime.ToString ("F0");
+			}
 		}
 	}
 
@@ -115,6 +127,20 @@ public class managerScript : MonoBehaviour {
 
 		float angle = Mathf.Atan2(pos.y, pos.x) * Mathf.Rad2Deg;
 		scr.launch(angle);
+	}
+
+	public void givePoints(int id){
+		playerPoints [id-1] += 1;
+		GameObject plus1obj = Instantiate(plus1Prefab, 
+			activeChars[id-1].transform.position, 
+			Quaternion.identity) as GameObject;
+
+		Vector2 dir = Vector2.up*3;
+		dir.x = Random.Range (-2, 2);
+
+		plus1obj.GetComponent<Rigidbody2D> ().velocity = dir;
+		plus1obj.GetComponent<selectSprite> ().changeSprite (id - 1);
+
 	}
 
 	void OnDestroy(){

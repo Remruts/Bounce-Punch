@@ -5,7 +5,6 @@ public class camScript : MonoBehaviour {
 
 	bool shaking = false;
 	float intensity = 0f;
-	float shakeFactor = 0.5f;
 	float shakeIncrement = 1f;
 
 	Vector3 startPos;
@@ -23,22 +22,24 @@ public class camScript : MonoBehaviour {
 	}
 		
 	void Update () {
-		if (shaking) {
-			intensity += shakeIncrement * Time.deltaTime;
-		}
-
-		if (!shaking && intensity > 0) {
-			intensity -= shakeIncrement * Time.deltaTime;
-
-			if (intensity < 0) {
-				intensity = 0;
+		if (!managerScript.manager.isPaused ()) {
+			if (shaking) {
+				intensity += shakeIncrement * Time.deltaTime;
 			}
-		}
 
-		shakenPos.x = startPos.x + Random.Range(-intensity, intensity);
-		shakenPos.y = startPos.y + Random.Range(-intensity, intensity);
-		shakenPos.z = startPos.z;
-		transform.position = shakenPos;
+			if (!shaking && intensity > 0) {
+				intensity -= shakeIncrement * Time.deltaTime;
+
+				if (intensity < 0) {
+					intensity = 0;
+				}
+			}
+
+			shakenPos.x = startPos.x + Random.Range(-intensity, intensity);
+			shakenPos.y = startPos.y + Random.Range(-intensity, intensity);
+			shakenPos.z = startPos.z;
+			transform.position = shakenPos;
+		}
 	}
 
 	public void shake(float time, float factor){

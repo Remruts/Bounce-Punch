@@ -23,6 +23,7 @@ public class charScript : MonoBehaviour {
 	[Space(10)]
 
 	public GameObject markerPrefab;
+	public GameObject sparks;
 
 	Animator myAnim;
 	Rigidbody2D rb;
@@ -37,6 +38,9 @@ public class charScript : MonoBehaviour {
 	float timeToPunch = 0f;
 	bool tapStick = false;
 	float hurtTimer = 0f;
+	float invensibilityTimer = 0f;
+
+	int lastHitPlayer = 0;
 
 	void Awake(){
 		myAnim = GetComponent<Animator> ();
@@ -59,7 +63,7 @@ public class charScript : MonoBehaviour {
 
 			AnimatorStateInfo state = myAnim.GetCurrentAnimatorStateInfo(0);
 
-			if (state.IsName ("moving") || state.IsName ("idle")) {
+			if (state.IsName ("moving")) {
 				idle ();
 			}
 
@@ -73,18 +77,33 @@ public class charScript : MonoBehaviour {
 				}
 			}
 
-			// Smash attack timer
-			if (timeToPunch > 0f) {
-				timeToPunch -= Time.deltaTime;
-				if (timeToPunch < 0f) {
-					timeToPunch = 0f;
+			if (invensibilityTimer > 0) {
+				invensibilityTimer -= Time.deltaTime;
+				if (invensibilityTimer <= 0) {
+					invensibilityTimer = 0;
 				}
 			}
 
-			//FIXME: Poner Blast Zones
+			// Smash attack timer
+			if (timeToPunch > 0f) {
+				timeToPunch -= Time.deltaTime;
+				if (timeToPunch <= 0f) {
+					timeToPunch = 0f;
+
+				}
+			}
+
+			// No creo que sean necesarias las blast-zones...
+			// death / muerte
 			if (Mathf.Abs(transform.position.x) > 15 || Mathf.Abs(transform.position.y) > 9) {
 				transform.position = startPos;
+
+				if (lastHitPlayer > 0) {
+					managerScript.manager.givePoints(lastHitPlayer);
+					lastHitPlayer = 0;
+				}
 				managerScript.manager.resetChar (playerId);
+
 			}
 
 			// Ajustar velocidad
@@ -104,6 +123,7 @@ public class charScript : MonoBehaviour {
 	}
 
 	void idle(){
+
 		float cX = Input.GetAxis("j" + playerId + "Horizontal");
 		float cY = -Input.GetAxis("j" + playerId + "Vertical");
 
@@ -135,6 +155,8 @@ public class charScript : MonoBehaviour {
 		if (Input.GetButtonDown ("j" + playerId + "Attack")) {
 			if (timeToPunch > 0) {
 				myAnim.SetTrigger ("hvpunch");
+				GameObject parts = Instantiate (sparks, transform.position, Quaternion.identity) as GameObject;
+				parts.transform.parent = transform;
 			} else {
 				myAnim.SetTrigger ("ltpunch");
 			}
@@ -152,33 +174,55 @@ public class charScript : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D other){
 		if (other.collider.CompareTag ("Paddle")) {
 
+			if (other.gameObject.GetComponent<paddleScript> ().playerId == playerId) {
+				// Sólo si es mi paleta
+				// El último que me pegó no es nadie
+				lastHitPlayer = 0;
+			}
+
 			// EXPERIMENTAL: normalizar velocidad
 			if (Input.GetButton("j" + playerId + "CW") && Input.GetButton("j" + playerId + "CCW")){
 				rb.velocity = rb.velocity.normalized * baseSpeed;
 			}
 
-			if (rb.velocity.sqrMagnitude < (baseSpeed * baseSpeed)) {
+			float magnitude = rb.velocity.sqrMagnitude;
+
+			if (magnitude < (baseSpeed * baseSpeed)) {
 				rb.velocity = rb.velocity.normalized * baseSpeed;
+			} else if (magnitude > (baseSpeed * baseSpeed) * 2) {
+				camScript.screen.shake (0.1f, 0.5f * ((baseSpeed * baseSpeed) * 2)/ magnitude);
 			}
 		}
 	}
 
 	void OnTriggerEnter2D(Collider2D other){
 		if (other.CompareTag ("Hitbox")) {			
-			if (!myAnim.GetBool("hurt") && (other.transform.parent != transform)){
+			if ((invensibilityTimer == 0) && (other.transform.parent != transform)){
 				hitboxScript hs = other.GetComponent<hitboxScript> ();
 				if (hs != null) {
-					myAnim.SetBool ("hurt", true);
-					hurtTimer = hurtCooldown * hs.knockback;
-					camScript.screen.shake (0.1f, 0.5f * hs.knockback);
+					AnimatorStateInfo state = myAnim.GetCurrentAnimatorStateInfo(0);
+
+					float knockback = hs.knockback;
+
+					if (!state.IsName ("block")) {
+						myAnim.SetBool ("hurt", true);
+						hurtTimer = hurtCooldown * hs.knockback;
+						invensibilityTimer = hurtCooldown / 2;
+					} else {
+						knockback /= 2;
+					}
+
+					camScript.screen.shake (0.1f, 0.5f * knockback);
 
 					Transform father = other.transform.parent;
 					float otherAngle = father.rotation.eulerAngles.z * Mathf.Deg2Rad;
 					Vector2 dir = new Vector2 (Mathf.Cos (otherAngle), Mathf.Sin (otherAngle));
 
-					rb.velocity = dir.normalized * hs.knockback * 10f /weight;
+					rb.velocity = dir.normalized * knockback * 10f /weight;
 
-					father.gameObject.GetComponent<Rigidbody2D> ().velocity = -dir.normalized * baseSpeed/2f * hs.knockback;
+					father.gameObject.GetComponent<Rigidbody2D> ().velocity = -dir.normalized * baseSpeed/2f * knockback;
+					lastHitPlayer = father.gameObject.GetComponent<charScript>().playerId;
+
 				}
 			}
 		}
