@@ -24,6 +24,7 @@ public class charScript : MonoBehaviour {
 
 	public GameObject markerPrefab;
 	public GameObject sparks;
+	public GameObject crystalDustPrefab;
 
 	Animator myAnim;
 	Rigidbody2D rb;
@@ -95,7 +96,11 @@ public class charScript : MonoBehaviour {
 
 			// No creo que sean necesarias las blast-zones...
 			// death / muerte
-			if (Mathf.Abs(transform.position.x) > 15 || Mathf.Abs(transform.position.y) > 9) {
+			if (Mathf.Abs(transform.position.x) > 14 || Mathf.Abs(transform.position.y) > 8) {
+
+				Instantiate (crystalDustPrefab, transform.position, Quaternion.identity);
+				camScript.screen.shake (0.1f, 0.5f);
+
 				transform.position = startPos;
 
 				if (lastHitPlayer > 0) {

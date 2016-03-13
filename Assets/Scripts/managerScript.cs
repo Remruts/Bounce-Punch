@@ -8,7 +8,9 @@ public class managerScript : MonoBehaviour {
 	public static managerScript manager;
 	public GameObject paddlePrefab;
 	public GameObject plus1Prefab;
+	[Space(5)]
 	public Text timerText;
+	public Text[] pointCounters;
 
 	bool paused = false;
 	int pausedPlayer = 0;
@@ -135,8 +137,9 @@ public class managerScript : MonoBehaviour {
 			activeChars[id-1].transform.position, 
 			Quaternion.identity) as GameObject;
 
-		Vector2 dir = Vector2.up*3;
-		dir.x = Random.Range (-2, 2);
+		Vector2 dir = Vector2.up*8;
+		dir.x = Random.Range (-5, 5);
+		pointCounters [id - 1].text = playerPoints [id - 1].ToString();
 
 		plus1obj.GetComponent<Rigidbody2D> ().velocity = dir;
 		plus1obj.GetComponent<selectSprite> ().changeSprite (id - 1);
