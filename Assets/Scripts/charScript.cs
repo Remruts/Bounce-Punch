@@ -9,6 +9,7 @@ public class charScript : MonoBehaviour {
 	//[Range(1, 4)]
 	public int playerId = 1;
 	public float hurtCooldown = 0.3f;
+	public float specialCharge = 0.2f;
 
 	// Stats
 	[Header("Stats")]
@@ -40,6 +41,7 @@ public class charScript : MonoBehaviour {
 	bool tapStick = false;
 	float hurtTimer = 0f;
 	float invensibilityTimer = 0f;
+	float specialMeter = 0f;
 
 	int lastHitPlayer = 0;
 
@@ -166,9 +168,12 @@ public class charScript : MonoBehaviour {
 				myAnim.SetTrigger ("ltpunch");
 			}
 		} else if (Input.GetButtonDown ("j" + playerId + "Special")) {
-			//myAnim.SetTrigger ("hvpunch");
-			myAnim.SetBool ("hurt", true);
-			hurtTimer = hurtCooldown;
+			if (specialMeter == 1f) {
+				myAnim.SetTrigger ("special");
+				GameObject parts = Instantiate (sparks, transform.position, Quaternion.identity) as GameObject;
+				parts.transform.parent = transform;
+				specialMeter = 0f;
+			}
 		} else if (Input.GetButtonDown ("j" + playerId + "Block")) {
 			myAnim.SetTrigger ("block");
 		} else if (Input.GetButtonDown ("j" + playerId + "Evade")) {
@@ -183,6 +188,11 @@ public class charScript : MonoBehaviour {
 				// Sólo si es mi paleta
 				// El último que me pegó no es nadie
 				lastHitPlayer = 0;
+				//Recargo especial
+				specialMeter += specialCharge;
+				if (specialMeter > 1f) {
+					specialMeter = 1f;
+				}
 			}
 
 			// EXPERIMENTAL: normalizar velocidad
@@ -208,6 +218,7 @@ public class charScript : MonoBehaviour {
 					AnimatorStateInfo state = myAnim.GetCurrentAnimatorStateInfo(0);
 
 					float knockback = hs.knockback;
+					bool inverted = hs.invert;
 
 					if (!state.IsName ("block")) {
 						myAnim.SetBool ("hurt", true);
@@ -220,7 +231,14 @@ public class charScript : MonoBehaviour {
 					camScript.screen.shake (0.1f, 0.5f * knockback);
 
 					Transform father = other.transform.parent;
-					float otherAngle = father.rotation.eulerAngles.z * Mathf.Deg2Rad;
+
+					float otherAngle = father.rotation.eulerAngles.z;
+					if (inverted) {
+						otherAngle -= 180;
+						if (otherAngle < 0)
+							otherAngle += 360;
+					}
+					otherAngle = otherAngle * Mathf.Deg2Rad;
 					Vector2 dir = new Vector2 (Mathf.Cos (otherAngle), Mathf.Sin (otherAngle));
 
 					rb.velocity = dir.normalized * knockback * 10f /weight;
