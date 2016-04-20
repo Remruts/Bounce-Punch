@@ -8,9 +8,11 @@ public class managerScript : MonoBehaviour {
 	public static managerScript manager;
 	public GameObject paddlePrefab;
 	public GameObject plus1Prefab;
+	public GameObject UIBarPrefab;
+	public GameObject Canvas;
 	[Space(5)]
 	public Text timerText;
-	public Text[] pointCounters;
+	public float resetTime = 1f;
 
 	bool paused = false;
 	int pausedPlayer = 0;
@@ -19,9 +21,10 @@ public class managerScript : MonoBehaviour {
 
 	List<GameObject> activeChars;
 	List<GameObject> paddles;
+	List<GameObject> UIBars;
+	private Text[] pointCounters;
 	int[] playerPoints;
 
-	// Use this for initialization
 	void Start () {
 		if (manager == null){
 			manager = this;
@@ -33,6 +36,7 @@ public class managerScript : MonoBehaviour {
 
 		playerNum = settingsScript.settings.characters.Length;
 		playerPoints = new int[playerNum];
+		pointCounters = new Text[playerNum];
 
 		currentTime = settingsScript.settings.matchTime;
 
@@ -56,6 +60,7 @@ public class managerScript : MonoBehaviour {
 
 		activeChars = new List<GameObject>();
 		paddles = new List<GameObject>();
+		UIBars = new List<GameObject> ();
 		int i = 1;
 
 		foreach(var chara in settingsScript.settings.characters){
@@ -83,6 +88,10 @@ public class managerScript : MonoBehaviour {
 			pd.setAngle(startAngle);
 			paddles [i - 1].GetComponent<selectSprite> ().changeSprite (i - 1);
 
+			GameObject ui = Instantiate (UIBarPrefab) as GameObject;
+			UIBars.Add (ui);
+			ui.transform.SetParent(Canvas.transform, false);
+
 			i++;
 
 			startAngle -= angDiv;
@@ -91,6 +100,31 @@ public class managerScript : MonoBehaviour {
 			}
 		}
 
+		for (int j = 0; j < UIBars.Count; ++j) {
+			setUIBar (j, 10);
+		}
+	}
+
+	void setUIBar(int num, float yPos){
+		float anchorX = (num % 3 > 0) ? 1 : 0;
+		float anchorY = (num < 2) ? 1 : 0;
+		float scale = (num % 3 > 0) ? -1 : 1;
+		yPos *= (2 * (-anchorY) + 1);
+
+		RectTransform rect = UIBars [num].GetComponent<Image> ().rectTransform;
+		rect.localScale = new Vector2 (scale, 1);
+		rect.anchorMax = new Vector2 (anchorX, anchorY);
+		rect.anchorMin = rect.anchorMax;
+		rect.pivot = new Vector2(0, anchorY);
+		rect.anchoredPosition = new Vector2 (0, yPos);
+
+		if (num % 3 > 0) {
+			pointCounters [num] = UIBars [num].GetComponentInChildren<Text> ();
+			pointCounters [num].transform.localScale = new Vector2 (-1, 1);
+			pointCounters [num].alignment = TextAnchor.MiddleRight;
+			RectTransform rect2 = pointCounters [num].gameObject.GetComponent<RectTransform> ();
+			rect2.pivot = new Vector2 (1, 0.5f);
+		}
 	}
 
 	// Update is called once per frame
@@ -122,10 +156,20 @@ public class managerScript : MonoBehaviour {
 	}
 
 	public void resetChar(int id){
+		print ("Start:" + Time.time);
+		activeChars[id - 1].SetActive (false);
+		StartCoroutine (resetCharInTime (id, resetTime));
+	}
+
+	public IEnumerator resetCharInTime(int id, float time){
+		
+		yield return new WaitForSeconds(time);
+		activeChars[id - 1].SetActive (true);
+
 		charScript scr = activeChars[id-1].GetComponent<charScript>();
 
 		Vector3 pos = (paddles[id-1].transform.position -
-			Vector3.zero).normalized;
+			activeChars[id-1].transform.position).normalized;
 
 		float angle = Mathf.Atan2(pos.y, pos.x) * Mathf.Rad2Deg;
 		scr.launch(angle);

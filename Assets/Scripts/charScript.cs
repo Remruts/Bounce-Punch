@@ -110,7 +110,6 @@ public class charScript : MonoBehaviour {
 					lastHitPlayer = 0;
 				}
 				managerScript.manager.resetChar (playerId);
-
 			}
 
 			// Ajustar velocidad
