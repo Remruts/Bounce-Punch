@@ -65,11 +65,19 @@ public class managerScript : MonoBehaviour {
 
 		foreach(var chara in settingsScript.settings.characters){
 
+			//Barra de UI
+			GameObject ui = Instantiate (UIBarPrefab) as GameObject;
+			UIBars.Add (ui);
+			ui.transform.SetParent(Canvas.transform, false);
+			setUIBar (i-1, 10);
+
+			//Ángulo
 			radAngle = startAngle * Mathf.Deg2Rad;
 
 			cX = Mathf.Cos(radAngle);
 			cY = Mathf.Sin(radAngle);
 
+			// Instancio Personaje
 			GameObject c = Instantiate(chara, new Vector3(cX, cY, 0), Quaternion.identity) as GameObject;
 
 			activeChars.Add(c);
@@ -82,16 +90,14 @@ public class managerScript : MonoBehaviour {
 				print("failed");
 			}
 
+			// Instancio paleta
 			paddles.Add( Instantiate(paddlePrefab) as GameObject);
 			paddleScript pd = paddles[i-1].GetComponent<paddleScript>();
 			pd.playerId = i;
 			pd.setAngle(startAngle);
 			paddles [i - 1].GetComponent<selectSprite> ().changeSprite (i - 1);
 
-			GameObject ui = Instantiate (UIBarPrefab) as GameObject;
-			UIBars.Add (ui);
-			ui.transform.SetParent(Canvas.transform, false);
-
+			// Próximo
 			i++;
 
 			startAngle -= angDiv;
@@ -99,12 +105,9 @@ public class managerScript : MonoBehaviour {
 				startAngle += 360;
 			}
 		}
-
-		for (int j = 0; j < UIBars.Count; ++j) {
-			setUIBar (j, 10);
-		}
 	}
 
+	// Función para posicionar cada Barra de UI en su lugar
 	void setUIBar(int num, float yPos){
 		float anchorX = (num % 3 > 0) ? 1 : 0;
 		float anchorY = (num < 2) ? 1 : 0;
@@ -118,13 +121,31 @@ public class managerScript : MonoBehaviour {
 		rect.pivot = new Vector2(0, anchorY);
 		rect.anchoredPosition = new Vector2 (0, yPos);
 
-		if (num % 3 > 0) {
-			pointCounters [num] = UIBars [num].GetComponentInChildren<Text> ();
+		pointCounters [num] = UIBars [num].GetComponentInChildren<Text> ();
+
+		if (num % 3 > 0) {			
 			pointCounters [num].transform.localScale = new Vector2 (-1, 1);
 			pointCounters [num].alignment = TextAnchor.MiddleRight;
 			RectTransform rect2 = pointCounters [num].gameObject.GetComponent<RectTransform> ();
 			rect2.pivot = new Vector2 (1, 0.5f);
 		}
+	}
+
+	public UIBarScript getUIBar(int id){
+		return UIBars[id-1].GetComponent<UIBarScript> ();
+	}
+
+	public void specialCharge(int id, bool max){
+		id -= 1; //normalizar [0, 3]
+
+		UIBarScript barscr = UIBars [id].GetComponent<UIBarScript> ();
+		barscr.buttonToggle (max);
+	}
+
+	public void specialReset(int id){
+		id -= 1;
+		UIBarScript barscr = UIBars [id].GetComponent<UIBarScript> ();
+		barscr.specialReset ();
 	}
 
 	// Update is called once per frame
@@ -156,7 +177,6 @@ public class managerScript : MonoBehaviour {
 	}
 
 	public void resetChar(int id){
-		print ("Start:" + Time.time);
 		activeChars[id - 1].SetActive (false);
 		StartCoroutine (resetCharInTime (id, resetTime));
 	}
@@ -167,6 +187,7 @@ public class managerScript : MonoBehaviour {
 		activeChars[id - 1].SetActive (true);
 
 		charScript scr = activeChars[id-1].GetComponent<charScript>();
+		scr.life = scr.res;
 
 		Vector3 pos = (paddles[id-1].transform.position -
 			activeChars[id-1].transform.position).normalized;

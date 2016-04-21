@@ -42,8 +42,11 @@ public class charScript : MonoBehaviour {
 	float hurtTimer = 0f;
 	float invensibilityTimer = 0f;
 	float specialMeter = 0f;
+	UIBarScript UIBar;
 
 	int lastHitPlayer = 0;
+	[HideInInspector]
+	public float life;
 
 	void Awake(){
 		myAnim = GetComponent<Animator> ();
@@ -53,11 +56,16 @@ public class charScript : MonoBehaviour {
 
 	void Start () {
 		startPos = transform.position;
+		life = res;
 
 		marker = Instantiate (markerPrefab, 
 			new Vector2 (gameObject.transform.position.x, gameObject.transform.position.y + 0.7f), 
 			Quaternion.identity) as GameObject;
 		marker.GetComponent<selectSprite> ().changeSprite (playerId - 1);
+
+		if (UIBar == null) {
+			UIBar = managerScript.manager.getUIBar (playerId);
+		}
 	}
 
 	void Update () {
@@ -92,24 +100,13 @@ public class charScript : MonoBehaviour {
 				timeToPunch -= Time.deltaTime;
 				if (timeToPunch <= 0f) {
 					timeToPunch = 0f;
-
 				}
 			}
 
 			// No creo que sean necesarias las blast-zones...
 			// death / muerte
-			if (Mathf.Abs(transform.position.x) > 14 || Mathf.Abs(transform.position.y) > 8) {
-
-				Instantiate (crystalDustPrefab, transform.position, Quaternion.identity);
-				camScript.screen.shake (0.1f, 0.5f);
-
-				transform.position = startPos;
-
-				if (lastHitPlayer > 0) {
-					managerScript.manager.givePoints(lastHitPlayer);
-					lastHitPlayer = 0;
-				}
-				managerScript.manager.resetChar (playerId);
+			if (Mathf.Abs(transform.position.x) > 14 || Mathf.Abs(transform.position.y) > 8 || life <= 0) {
+				die ();
 			}
 
 			// Ajustar velocidad
@@ -125,7 +122,25 @@ public class charScript : MonoBehaviour {
 		if (marker != null) {
 			marker.transform.position = new Vector2 (gameObject.transform.position.x, gameObject.transform.position.y + 0.7f);
 		}
+		life = Mathf.Clamp (life + Time.deltaTime * 0.1f, 0, res);
+		if (UIBar != null) {
+			UIBar.setLifebar(life/res);
+		}
 
+	}
+
+	void die(){
+		Instantiate (crystalDustPrefab, transform.position, Quaternion.identity);
+		camScript.screen.shake (0.1f, 0.5f);
+
+		transform.position = startPos;
+
+		if (lastHitPlayer > 0) {
+			managerScript.manager.givePoints(lastHitPlayer);
+			lastHitPlayer = 0;
+		}
+		rb.velocity = Vector2.zero;
+		managerScript.manager.resetChar (playerId);
 	}
 
 	void idle(){
@@ -160,24 +175,45 @@ public class charScript : MonoBehaviour {
 
 		if (Input.GetButtonDown ("j" + playerId + "Attack")) {
 			if (timeToPunch > 0) {
-				myAnim.SetTrigger ("hvpunch");
-				GameObject parts = Instantiate (sparks, transform.position, Quaternion.identity) as GameObject;
-				parts.transform.parent = transform;
+				hvPunch ();
 			} else {
-				myAnim.SetTrigger ("ltpunch");
+				ltPunch ();
 			}
 		} else if (Input.GetButtonDown ("j" + playerId + "Special")) {
-			if (specialMeter == 1f) {
-				myAnim.SetTrigger ("special");
-				GameObject parts = Instantiate (sparks, transform.position, Quaternion.identity) as GameObject;
-				parts.transform.parent = transform;
-				specialMeter = 0f;
-			}
+			special ();
 		} else if (Input.GetButtonDown ("j" + playerId + "Block")) {
-			myAnim.SetTrigger ("block");
+			block ();
 		} else if (Input.GetButtonDown ("j" + playerId + "Evade")) {
-			myAnim.SetTrigger ("dodge");
+			dodge ();
 		}
+	}
+
+	void ltPunch(){
+		myAnim.SetTrigger ("ltpunch");
+	}
+
+	void hvPunch(){
+		myAnim.SetTrigger ("hvpunch");
+		GameObject parts = Instantiate (sparks, transform.position, Quaternion.identity) as GameObject;
+		parts.transform.parent = transform;
+	}
+
+	void special(){
+		if (specialMeter == 1f) {
+			myAnim.SetTrigger ("special");
+			GameObject parts = Instantiate (sparks, transform.position, Quaternion.identity) as GameObject;
+			parts.transform.parent = transform;
+			specialMeter = 0f;
+			managerScript.manager.specialReset (playerId);
+		}
+	}
+
+	void block(){
+		myAnim.SetTrigger ("block");
+	}
+
+	void dodge(){
+		myAnim.SetTrigger ("dodge");
 	}
 
 	void OnCollisionEnter2D(Collision2D other){
@@ -188,9 +224,13 @@ public class charScript : MonoBehaviour {
 				// El último que me pegó no es nadie
 				lastHitPlayer = 0;
 				//Recargo especial
-				specialMeter += specialCharge;
-				if (specialMeter > 1f) {
-					specialMeter = 1f;
+				if (specialMeter < 1f){
+					specialMeter += specialCharge;
+
+					if (specialMeter >= 1f) {						
+						specialMeter = 1f;
+					}
+					UIBar.buttonToggle(specialMeter == 1f);
 				}
 			}
 
@@ -216,8 +256,8 @@ public class charScript : MonoBehaviour {
 				if (hs != null) {
 					AnimatorStateInfo state = myAnim.GetCurrentAnimatorStateInfo(0);
 
-					float knockback = hs.knockback;
-					bool inverted = hs.invert;
+					float knockback = hs.knockback; // fuerza de knockback
+					bool inverted = hs.invert; 		// Indica si va para el otro lado
 
 					if (!state.IsName ("block")) {
 						myAnim.SetBool ("hurt", true);
@@ -242,9 +282,13 @@ public class charScript : MonoBehaviour {
 
 					rb.velocity = dir.normalized * knockback * 10f /weight;
 
+					// Hacer que el que me pegó también tenga knockback
 					father.gameObject.GetComponent<Rigidbody2D> ().velocity = -dir.normalized * baseSpeed/2f * knockback;
-					lastHitPlayer = father.gameObject.GetComponent<charScript>().playerId;
+					charScript otherScript = father.gameObject.GetComponent<charScript> ();
+					lastHitPlayer = otherScript.playerId; // el último que me pegó es el otro
 
+					// Quita vida dependiendo de la fuerza del otro
+					life = Mathf.Clamp (life - knockback * otherScript.str / 20f, 0, res);
 				}
 			}
 		}
