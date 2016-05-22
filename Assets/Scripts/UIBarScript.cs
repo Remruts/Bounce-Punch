@@ -7,6 +7,9 @@ public class UIBarScript : MonoBehaviour {
 	public Image specialButton;
 	public Sprite[] buttonSprites;
 	[Space(10)]
+	public Image indicator;
+	public Sprite[] playerIndicators;
+	[Space(10)]
 	public Image lifeBar;
 
 	bool specialCharged;
@@ -27,6 +30,15 @@ public class UIBarScript : MonoBehaviour {
 
 	public void setLifebar(float amount){
 		lifeBar.fillAmount = amount;
+	}
+
+	public void setPlayerIndicator(int i, float minmaxY, float scale, float posY){
+		indicator.sprite = playerIndicators [i];
+		RectTransform rect = indicator.rectTransform;
+		rect.localScale = new Vector2 (rect.localScale.x * scale, rect.localScale.y);
+		rect.anchorMin = new Vector2 (rect.anchorMin.x, minmaxY);
+		rect.anchorMax = rect.anchorMin;
+		rect.anchoredPosition = new Vector2 (rect.anchoredPosition.x, posY);
 	}
 
 	public void buttonToggle (bool max){

@@ -108,7 +108,8 @@ public class managerScript : MonoBehaviour {
 	}
 
 	// Función para posicionar cada Barra de UI en su lugar
-	void setUIBar(int num, float yPos){
+	void setUIBar(int num, float yPos){		
+
 		float anchorX = (num % 3 > 0) ? 1 : 0;
 		float anchorY = (num < 2) ? 1 : 0;
 		float scale = (num % 3 > 0) ? -1 : 1;
@@ -120,6 +121,9 @@ public class managerScript : MonoBehaviour {
 		rect.anchorMin = rect.anchorMax;
 		rect.pivot = new Vector2(0, anchorY);
 		rect.anchoredPosition = new Vector2 (0, yPos);
+
+		UIBars[num].GetComponent<UIBarScript> ().
+			setPlayerIndicator (num, 1 - anchorY, scale, -8 -16 * anchorY);
 
 		pointCounters [num] = UIBars [num].GetComponentInChildren<Text> ();
 
@@ -188,6 +192,7 @@ public class managerScript : MonoBehaviour {
 
 		charScript scr = activeChars[id-1].GetComponent<charScript>();
 		scr.life = scr.res;
+		scr.invensibilityTimer = 1.5f;
 
 		Vector3 pos = (paddles[id-1].transform.position -
 			activeChars[id-1].transform.position).normalized;
@@ -196,18 +201,24 @@ public class managerScript : MonoBehaviour {
 		scr.launch(angle);
 	}
 
-	public void givePoints(int id){
-		playerPoints [id-1] += 1;
-		GameObject plus1obj = Instantiate(plus1Prefab, 
-			activeChars[id-1].transform.position, 
-			Quaternion.identity) as GameObject;
-
-		Vector2 dir = Vector2.up*8;
-		dir.x = Random.Range (-5, 5);
+	public void givePoints(int id, int points){
+		playerPoints [id-1] += points;
+		if (playerPoints [id - 1] < 0) {
+			playerPoints [id - 1] = 0;
+		}
 		pointCounters [id - 1].text = playerPoints [id - 1].ToString();
 
-		plus1obj.GetComponent<Rigidbody2D> ().velocity = dir;
-		plus1obj.GetComponent<selectSprite> ().changeSprite (id - 1);
+		if (points > 0) {
+			GameObject plus1obj = Instantiate(plus1Prefab, 
+				activeChars[id-1].transform.position, 
+				Quaternion.identity) as GameObject;
+
+			Vector2 dir = Vector2.up*8;
+			dir.x = Random.Range (-5, 5);
+
+			plus1obj.GetComponent<Rigidbody2D> ().velocity = dir;
+			plus1obj.GetComponent<selectSprite> ().changeSprite (id - 1);
+		}
 
 	}
 

@@ -7,8 +7,15 @@ public class camScript : MonoBehaviour {
 	float intensity = 0f;
 	float shakeIncrement = 1f;
 
+	bool zooming = false;
+	float zoomFactor = 0f;
+	float zoomIncrement = 0.1f;
+
 	Vector3 startPos;
 	Vector3 shakenPos;
+
+	Camera myCam;
+	float startSize;
 
 	public static camScript screen;
 
@@ -19,6 +26,9 @@ public class camScript : MonoBehaviour {
 			Destroy (gameObject);
 		}
 		startPos = transform.position;
+
+		myCam = GetComponent<Camera> ();
+		startSize = myCam.orthographicSize;
 	}
 		
 	void Update () {
@@ -39,6 +49,22 @@ public class camScript : MonoBehaviour {
 			shakenPos.y = startPos.y + Random.Range(-intensity, intensity);
 			shakenPos.z = startPos.z;
 			transform.position = shakenPos;
+
+			if (zooming) {
+				zoomFactor -= zoomIncrement * Time.deltaTime;
+			}
+
+			if (!zooming && zoomFactor < 0) {
+				zoomFactor += zoomIncrement * Time.deltaTime;
+
+				if (zoomFactor > 0) {
+					zoomFactor = 0;
+				}
+			}
+
+			myCam.orthographicSize = startSize + zoomFactor;
+
+
 		}
 	}
 
@@ -52,7 +78,19 @@ public class camScript : MonoBehaviour {
 		shakeIncrement = factor;
 	}
 
+	public void zoom(float time, float factor){
+		zooming = true;
+		if (time > 0) {
+			Invoke ("stopZooming", time);
+		}
+		zoomIncrement = factor;
+	}
+
 	public void stopShaking(){
 		shaking = false;
+	}
+
+	public void stopZooming(){
+		zooming = false;
 	}
 }

@@ -40,11 +40,16 @@ public class charScript : MonoBehaviour {
 	float timeToPunch = 0f;
 	bool tapStick = false;
 	float hurtTimer = 0f;
-	float invensibilityTimer = 0f;
+	[HideInInspector]
+	public float invensibilityTimer = 0f;
 	float specialMeter = 0f;
 	UIBarScript UIBar;
 
-	int lastHitPlayer = 0;
+	float outlineSize = 0.5f;
+	Color startOutlineColor;
+	Color outlineColor;
+
+	int lastHitPlayer = -1;
 	[HideInInspector]
 	public float life;
 
@@ -66,6 +71,27 @@ public class charScript : MonoBehaviour {
 		if (UIBar == null) {
 			UIBar = managerScript.manager.getUIBar (playerId);
 		}
+
+		switch (playerId) {
+		case 1:			
+			startOutlineColor = new Color (1f, 0f, 0.2f, 0.2f);
+			break;
+		case 2:
+			startOutlineColor = new Color (0f, 0.2f, 1f, 0.2f);
+			break;
+		case 3:
+			startOutlineColor = new Color (0f, 0.7f, 0.1f, 0.2f);
+			break;
+		case 4:
+			startOutlineColor = new Color (0.8f, 0.2f, 0f, 0.2f);
+			break;
+		default:
+			startOutlineColor = new Color (0.5f, 0.2f, 0.8f, 0.2f);
+			break;
+		}
+
+		outlineColor = startOutlineColor;
+		UpdateShader ();
 	}
 
 	void Update () {
@@ -89,10 +115,16 @@ public class charScript : MonoBehaviour {
 			}
 
 			if (invensibilityTimer > 0) {
+				Color colorWithoutAlpha = sprRenderer.color;
+				if (!state.IsName ("hurt")) {
+					colorWithoutAlpha.a = 0.5f;
+				}
 				invensibilityTimer -= Time.deltaTime;
 				if (invensibilityTimer <= 0) {
 					invensibilityTimer = 0;
+					colorWithoutAlpha.a = 1f;
 				}
+				sprRenderer.color = colorWithoutAlpha;
 			}
 
 			// Smash attack timer
@@ -133,12 +165,16 @@ public class charScript : MonoBehaviour {
 		Instantiate (crystalDustPrefab, transform.position, Quaternion.identity);
 		camScript.screen.shake (0.1f, 0.5f);
 
+		myAnim.SetTrigger ("reset");
 		transform.position = startPos;
 
 		if (lastHitPlayer > 0) {
-			managerScript.manager.givePoints(lastHitPlayer);
-			lastHitPlayer = 0;
+			managerScript.manager.givePoints (lastHitPlayer, 1);
+		} else if (lastHitPlayer < 0) {
+			managerScript.manager.givePoints (playerId, -1);
 		}
+
+		lastHitPlayer = -1;
 		rb.velocity = Vector2.zero;
 		managerScript.manager.resetChar (playerId);
 	}
@@ -192,7 +228,7 @@ public class charScript : MonoBehaviour {
 		myAnim.SetTrigger ("ltpunch");
 	}
 
-	void hvPunch(){
+	void hvPunch(){		
 		myAnim.SetTrigger ("hvpunch");
 		GameObject parts = Instantiate (sparks, transform.position, Quaternion.identity) as GameObject;
 		parts.transform.parent = transform;
@@ -200,11 +236,16 @@ public class charScript : MonoBehaviour {
 
 	void special(){
 		if (specialMeter == 1f) {
+			camScript.screen.zoom (0.2f, 7f);
 			myAnim.SetTrigger ("special");
 			GameObject parts = Instantiate (sparks, transform.position, Quaternion.identity) as GameObject;
 			parts.transform.parent = transform;
 			specialMeter = 0f;
 			managerScript.manager.specialReset (playerId);
+
+			outlineColor = startOutlineColor;
+			outlineSize = 1f;
+			UpdateShader ();
 		}
 	}
 
@@ -229,6 +270,9 @@ public class charScript : MonoBehaviour {
 
 					if (specialMeter >= 1f) {						
 						specialMeter = 1f;
+						outlineColor.a = 1f;
+						outlineSize = 2f;
+						UpdateShader ();
 					}
 					UIBar.buttonToggle(specialMeter == 1f);
 				}
@@ -314,6 +358,15 @@ public class charScript : MonoBehaviour {
 		float cX = Mathf.Cos (angle * Mathf.Deg2Rad) * baseSpeed;
 		float cY = Mathf.Sin (angle * Mathf.Deg2Rad) * baseSpeed;
 		rb.velocity =  new Vector2(cX, cY);
+	}
+
+	void UpdateShader(){
+		MaterialPropertyBlock mpb = new MaterialPropertyBlock();
+		sprRenderer.GetPropertyBlock(mpb);
+		//mpb.SetFloat("_Outline", outline ? 1f : 0);
+		mpb.SetColor("_OutlineColor", outlineColor);
+		mpb.SetFloat("_OutlineSize", outlineSize);
+		sprRenderer.SetPropertyBlock(mpb);
 	}
 
 	void OnDestroy(){

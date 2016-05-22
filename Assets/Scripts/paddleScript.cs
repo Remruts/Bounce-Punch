@@ -8,13 +8,13 @@ public class paddleScript : MonoBehaviour {
 	public int playerId = 1;
 	public float radius = 6.5f;
 	public float maxSpeed = 7f;
-	public float speedIncrement = 0.7f;
+	public float acceleration = 0.7f;
 	//[Header("Air Friction")]
 	//[Space(10)]
 	//[Tooltip("Air Friction")]
 	//[ContextMenuItem("Say stuff", "stuff")]
 	[Range(0f, 1f)]
-	public float drag = 0.1f;
+	public float drag = 0.13f;
 
 	float speed = 0f;
 	float angle = 0f;
@@ -50,12 +50,22 @@ public class paddleScript : MonoBehaviour {
 
 			if (Input.GetButton("j" + playerId + "CCW")){
 				if (speed < maxSpeed)
-					speed += speedIncrement;
+					speed += acceleration;
 			}
 
 			if (Input.GetButton("j" + playerId + "CW")){
 				if (speed > -maxSpeed)
-					speed -= speedIncrement;
+					speed -= acceleration;
+			}
+
+			if (Input.GetButton("j" + playerId + "CCW2")){
+				if (speed < maxSpeed)
+					speed += acceleration/2;
+			}
+
+			if (Input.GetButton("j" + playerId + "CW2")){
+				if (speed > -maxSpeed)
+					speed -= acceleration/2;
 			}
 
 			if (Input.GetButton ("j" + playerId + "CW") && Input.GetButton ("j" + playerId + "CCW")) {
