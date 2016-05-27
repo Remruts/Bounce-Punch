@@ -116,7 +116,7 @@ public class charScript : MonoBehaviour {
 
 			if (invensibilityTimer > 0) {
 				Color colorWithoutAlpha = sprRenderer.color;
-				if (!state.IsName ("hurt")) {
+				if (hurtTimer == 0) {
 					colorWithoutAlpha.a = 0.5f;
 				}
 				invensibilityTimer -= Time.deltaTime;

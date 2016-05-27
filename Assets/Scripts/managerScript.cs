@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class managerScript : MonoBehaviour {
 
@@ -12,8 +13,10 @@ public class managerScript : MonoBehaviour {
 	public GameObject Canvas;
 	[Space(5)]
 	public Text timerText;
-	public float resetTime = 1f;
+	public float respawnTime = 1f;
+	public float transitionTime = 3f;
 
+	bool playing = true;
 	bool paused = false;
 	int pausedPlayer = 0;
 	int playerNum;
@@ -25,7 +28,7 @@ public class managerScript : MonoBehaviour {
 	private Text[] pointCounters;
 	int[] playerPoints;
 
-	void Start () {
+	void Awake () {
 		if (manager == null){
 			manager = this;
 		} else {
@@ -86,6 +89,7 @@ public class managerScript : MonoBehaviour {
 			if (scr != null){
 				scr.playerId = i;
 				scr.launch(startAngle);
+				//resetChar (i);
 			} else {
 				print("failed");
 			}
@@ -96,6 +100,9 @@ public class managerScript : MonoBehaviour {
 			pd.playerId = i;
 			pd.setAngle(startAngle);
 			paddles [i - 1].GetComponent<selectSprite> ().changeSprite (i - 1);
+
+			// puntos
+			//playerPoints[i] = 0;
 
 			// Próximo
 			i++;
@@ -154,26 +161,44 @@ public class managerScript : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		// check pause
-		if (paused) {
-			if (Input.GetButtonDown ("j" + (pausedPlayer + 1) + "Start")) {
-				paused = false;
-				Time.timeScale = 1f;
-			}
-		} else {
-			for (int i = 0; i < playerNum; ++i){
-				if (Input.GetButtonDown("j" + (i+1) +"Start")){
-					paused = true;
-					pausedPlayer = i;
-					Time.timeScale = 0f;
-					break;
+		if (playing) {
+			// check pause
+			if (paused) {
+				if (Input.GetButtonDown ("j" + (pausedPlayer + 1) + "Start")) {
+					paused = false;
+					Time.timeScale = 1f;
+				}
+			} else {
+				for (int i = 0; i < playerNum; ++i) {
+					if (Input.GetButtonDown ("j" + (i + 1) + "Start")) {
+						paused = true;
+						pausedPlayer = i;
+						Time.timeScale = 0f;
+						break;
+					}
+				}
+
+				// update timer 
+				if (currentTime > 0) {
+					currentTime -= Time.deltaTime;
+					timerText.text = currentTime.ToString ("F0");
+				} else {
+					//if match ended
+					if (currentTime < 0) {
+						currentTime = 0;
+					}
+
+					timerText.text = currentTime.ToString ("F0");
+					playing = false;
+					Time.timeScale = 0.1f;
+					StartCoroutine (endGame (transitionTime * 0.1f));
 				}
 			}
-			if (currentTime > 0) {
-				currentTime -= Time.deltaTime;
-				timerText.text = currentTime.ToString ("F0");
-			}
 		}
+	}
+
+	public bool checkIfPlaying(){
+		return playing;
 	}
 
 	public bool isPaused(){
@@ -182,10 +207,15 @@ public class managerScript : MonoBehaviour {
 
 	public void resetChar(int id){
 		activeChars[id - 1].SetActive (false);
-		StartCoroutine (resetCharInTime (id, resetTime));
+		StartCoroutine (resetCharInTime (id, respawnTime));
 	}
 
-	public IEnumerator resetCharInTime(int id, float time){
+	IEnumerator endGame(float time){
+		yield return new WaitForSeconds(time);
+		SceneManager.LoadScene ("resultsScene");
+	}
+
+	IEnumerator resetCharInTime(int id, float time){
 		
 		yield return new WaitForSeconds(time);
 		activeChars[id - 1].SetActive (true);
@@ -201,7 +231,27 @@ public class managerScript : MonoBehaviour {
 		scr.launch(angle);
 	}
 
+	public int getWinner(){
+		int winner = -1;
+		int winnerPoints = 0;
+
+		for (int i = 0; i < 4; ++i) {			
+			if (playerPoints [i] > winnerPoints) {
+				winner = i;
+				winnerPoints = playerPoints [i];
+			} else if (playerPoints [i] == winnerPoints){
+				winner = -1;
+			}
+		}
+
+		return winner;
+	}
+
 	public void givePoints(int id, int points){
+		if (!playing) {
+			return;
+		}
+
 		playerPoints [id-1] += points;
 		if (playerPoints [id - 1] < 0) {
 			playerPoints [id - 1] = 0;

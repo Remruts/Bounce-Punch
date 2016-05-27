@@ -18,7 +18,7 @@ public class fpsScript : MonoBehaviour {
         if(Time.timeSinceLevelLoad  - timeA <= 1) {
             fps++;
         } else {
-            lastFPS = fps + 1;
+            lastFPS = fps;
             timeA = Time.timeSinceLevelLoad;
             fps = 0;
         }
