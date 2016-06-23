@@ -14,7 +14,9 @@ public class managerScript : MonoBehaviour {
 	[Space(5)]
 	public Text timerText;
 	public float respawnTime = 1f;
-	public float transitionTime = 3f;
+	public float transitionTime = 6f;
+	[Space(5)]
+	public GameObject greatCircle;
 
 	bool playing = true;
 	bool paused = false;
@@ -25,10 +27,10 @@ public class managerScript : MonoBehaviour {
 	List<GameObject> activeChars;
 	List<GameObject> paddles;
 	List<GameObject> UIBars;
-	private Text[] pointCounters;
+	Text[] pointCounters;
 	int[] playerPoints;
 
-	void Awake () {
+	void Start () {
 		if (manager == null){
 			manager = this;
 		} else {
@@ -46,17 +48,27 @@ public class managerScript : MonoBehaviour {
 		float angDiv = 360.0f/(float)playerNum;
 		float startAngle;
 
+		float camSize = 7f;
+		float paddleRad = 6.5f;
+
 		switch (playerNum){
-		case 4:
+		case 4:		
+			camSize = 6.5f;	
 			startAngle = 135;
 		break;
 		case 3:
+			camSize = 6f;
 			startAngle = 150;
 		break;
 		default:
+			camSize = 5.5f;
 			startAngle = 180;
 		break;
 		}
+
+		Camera.main.orthographicSize = camSize;
+		greatCircle.transform.localScale = new Vector2 (camSize / 7f, camSize / 7f);
+		paddleRad = camSize - 0.5f;
 
 		float cX, cY;
 		float radAngle;
@@ -99,6 +111,7 @@ public class managerScript : MonoBehaviour {
 			paddleScript pd = paddles[i-1].GetComponent<paddleScript>();
 			pd.playerId = i;
 			pd.setAngle(startAngle);
+			pd.radius = paddleRad;
 			paddles [i - 1].GetComponent<selectSprite> ().changeSprite (i - 1);
 
 			// puntos
@@ -168,6 +181,7 @@ public class managerScript : MonoBehaviour {
 					paused = false;
 					Time.timeScale = 1f;
 				}
+				timerText.text = "BOUNCE\nPUNCH!";
 			} else {
 				for (int i = 0; i < playerNum; ++i) {
 					if (Input.GetButtonDown ("j" + (i + 1) + "Start")) {
@@ -188,7 +202,7 @@ public class managerScript : MonoBehaviour {
 						currentTime = 0;
 					}
 
-					timerText.text = currentTime.ToString ("F0");
+					timerText.text = "0";
 					playing = false;
 					Time.timeScale = 0.1f;
 					StartCoroutine (endGame (transitionTime * 0.1f));
@@ -211,12 +225,15 @@ public class managerScript : MonoBehaviour {
 	}
 
 	IEnumerator endGame(float time){
-		yield return new WaitForSeconds(time);
+		yield return new WaitForSeconds(time/2f);
+		transitionScript.transition.startTransition (transitionTime/2f);
+		yield return new WaitForSeconds(time/2f);
+		Time.timeScale = 1f;
+		pickWinner ();
 		SceneManager.LoadScene ("resultsScene");
 	}
 
-	IEnumerator resetCharInTime(int id, float time){
-		
+	IEnumerator resetCharInTime(int id, float time){		
 		yield return new WaitForSeconds(time);
 		activeChars[id - 1].SetActive (true);
 
@@ -231,7 +248,7 @@ public class managerScript : MonoBehaviour {
 		scr.launch(angle);
 	}
 
-	public int getWinner(){
+	public void pickWinner(){
 		int winner = -1;
 		int winnerPoints = 0;
 
@@ -244,7 +261,7 @@ public class managerScript : MonoBehaviour {
 			}
 		}
 
-		return winner;
+		settingsScript.settings.setWinner (winner); 
 	}
 
 	public void givePoints(int id, int points){

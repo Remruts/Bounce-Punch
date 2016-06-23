@@ -164,6 +164,7 @@ public class charScript : MonoBehaviour {
 	void die(){
 		Instantiate (crystalDustPrefab, transform.position, Quaternion.identity);
 		camScript.screen.shake (0.1f, 0.5f);
+		hurtTimer = 0f;
 
 		myAnim.SetTrigger ("reset");
 		transform.position = startPos;

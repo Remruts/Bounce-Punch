@@ -14,6 +14,8 @@ public class settingsScript : MonoBehaviour {
 	public int maxLives;		// maxLives that each player has
 	public int matchTime;		// match time in minutes. 0 for endless.
 
+	private int winner = -1;
+
 	void Awake () {
 		if (settings == null){
 			DontDestroyOnLoad(gameObject);
@@ -45,6 +47,13 @@ public class settingsScript : MonoBehaviour {
 			maxLives = data.maxLives;
 			matchTime = data.matchTime;
 		}
+	}
+
+	public void setWinner(int w){
+		winner = w;
+	}
+	public int getWinner(){
+		return winner;
 	}
 
 }

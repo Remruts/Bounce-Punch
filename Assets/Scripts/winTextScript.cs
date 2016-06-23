@@ -13,8 +13,8 @@ public class winTextScript : MonoBehaviour {
 	void Start () {
 		txt = GetComponent<Text> ();
 
-		if (managerScript.manager != null) {
-			winner = managerScript.manager.getWinner ();
+		if (settingsScript.settings != null) {
+			winner = settingsScript.settings.getWinner ();
 		}
 
 		if (winner > -1) {
@@ -23,7 +23,13 @@ public class winTextScript : MonoBehaviour {
 			txt.text = "Draw";
 		}
 
-		//SceneManager.LoadScene ("gameScene");
+		transitionScript.transition.startTransition (1.7f);
+	}
+
+	void Update(){
+		if (Input.GetButtonDown ("j1Start")){
+			SceneManager.LoadScene ("gameScene");
+		}
 	}
 
 }

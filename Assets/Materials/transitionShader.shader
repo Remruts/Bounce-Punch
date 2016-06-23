@@ -67,7 +67,7 @@
 					fixed2 newuv = i.uv;
 					newuv.x *= _TransitionTex_TexelSize.x / _MainTex_TexelSize.x;
 					newuv.y *= _TransitionTex_TexelSize.y / _MainTex_TexelSize.y;
-					return lerp(col, tex2D(_TransitionTex, newuv + _Translation.xy*_Time.y), _Fade);
+					return lerp(col, tex2D(_TransitionTex, newuv + _Translation.xy), _Fade);
 				}
 				return col;
 			}
