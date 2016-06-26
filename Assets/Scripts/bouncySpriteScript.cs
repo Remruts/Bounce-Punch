@@ -4,23 +4,23 @@ using System.Collections;
 
 public class bouncySpriteScript : MonoBehaviour {
 
-	[Range(0, 50)]
+	[Range(-50, 50)]
 	public float factor = 20f;
-	[Range(0, 20)]
+	[Range(-20, 20)]
 	public float frequency = 10f;
-	[Range(0, 50)]
+	[Range(-50, 50)]
 	public float rotFactor = 2f;
-	[Range(0, 20)]
+	[Range(-20, 20)]
 	public float rotFrequency = 3f;
 
 	[Space(10)]
-	[Range(0, 1)]
+	[Range(-1, 1)]
 	public float xFactor = 0f;
-	[Range(0, 20)]
+	[Range(-20, 20)]
 	public float xFrequency = 0f;
-	[Range(0, 1)]
+	[Range(-1, 1)]
 	public float yFactor = 0f;
-	[Range(0, 20)]
+	[Range(-20, 20)]
 	public float yFrequency = 0f;
 
 	private RectTransform img;

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 [ExecuteInEditMode]
 public class transitionScript : MonoBehaviour {
@@ -11,6 +12,7 @@ public class transitionScript : MonoBehaviour {
 
 	public Texture[] transitionMasks;
 	public static transitionScript transition;
+	public string level = "";
 
 	float cutoff = 0f;
 	float translationFactor = 0f;
@@ -40,6 +42,10 @@ public class transitionScript : MonoBehaviour {
 					cutoff += Time.deltaTime / (transitionTime * Time.timeScale);
 					if (cutoff > 1) {
 						cutoff = 1f;
+
+						if (level != ""){
+							SceneManager.LoadScene (level);
+						}
 					}
 				}
 			}
