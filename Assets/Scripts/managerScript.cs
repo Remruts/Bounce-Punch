@@ -52,8 +52,8 @@ public class managerScript : MonoBehaviour {
 		float paddleRad = 6.5f;
 
 		switch (playerNum){
-		case 4:		
-			camSize = 6.5f;	
+		case 4:
+			camSize = 6.5f;
 			startAngle = 135;
 		break;
 		case 3:
@@ -128,7 +128,7 @@ public class managerScript : MonoBehaviour {
 	}
 
 	// Función para posicionar cada Barra de UI en su lugar
-	void setUIBar(int num, float yPos){		
+	void setUIBar(int num, float yPos){
 
 		float anchorX = (num % 3 > 0) ? 1 : 0;
 		float anchorY = (num < 2) ? 1 : 0;
@@ -147,7 +147,7 @@ public class managerScript : MonoBehaviour {
 
 		pointCounters [num] = UIBars [num].GetComponentInChildren<Text> ();
 
-		if (num % 3 > 0) {			
+		if (num % 3 > 0) {
 			pointCounters [num].transform.localScale = new Vector2 (-1, 1);
 			pointCounters [num].alignment = TextAnchor.MiddleRight;
 			RectTransform rect2 = pointCounters [num].gameObject.GetComponent<RectTransform> ();
@@ -192,7 +192,7 @@ public class managerScript : MonoBehaviour {
 					}
 				}
 
-				// update timer 
+				// update timer
 				if (currentTime > 0) {
 					currentTime -= Time.deltaTime;
 					timerText.text = currentTime.ToString ("F0");
@@ -233,7 +233,7 @@ public class managerScript : MonoBehaviour {
 		SceneManager.LoadScene ("resultsScene");
 	}
 
-	IEnumerator resetCharInTime(int id, float time){		
+	IEnumerator resetCharInTime(int id, float time){
 		yield return new WaitForSeconds(time);
 		activeChars[id - 1].SetActive (true);
 
@@ -252,7 +252,7 @@ public class managerScript : MonoBehaviour {
 		int winner = -1;
 		int winnerPoints = 0;
 
-		for (int i = 0; i < 4; ++i) {			
+		for (int i = 0; i < playerNum; ++i) {
 			if (playerPoints [i] > winnerPoints) {
 				winner = i;
 				winnerPoints = playerPoints [i];
@@ -261,7 +261,7 @@ public class managerScript : MonoBehaviour {
 			}
 		}
 
-		settingsScript.settings.setWinner (winner); 
+		settingsScript.settings.setWinner (winner);
 	}
 
 	public void givePoints(int id, int points){
@@ -276,8 +276,8 @@ public class managerScript : MonoBehaviour {
 		pointCounters [id - 1].text = playerPoints [id - 1].ToString();
 
 		if (points > 0) {
-			GameObject plus1obj = Instantiate(plus1Prefab, 
-				activeChars[id-1].transform.position, 
+			GameObject plus1obj = Instantiate(plus1Prefab,
+				activeChars[id-1].transform.position,
 				Quaternion.identity) as GameObject;
 
 			Vector2 dir = Vector2.up*8;

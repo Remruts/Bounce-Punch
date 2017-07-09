@@ -8,6 +8,7 @@ public class winTextScript : MonoBehaviour {
 
 	Text txt;
 	int winner = -1;
+	public string nextScene = "gameScene";
 
 	// Use this for initialization
 	void Start () {
@@ -28,7 +29,7 @@ public class winTextScript : MonoBehaviour {
 
 	void Update(){
 		if (Input.GetButtonDown ("j1Start")){
-			SceneManager.LoadScene ("gameScene");
+			SceneManager.LoadScene (nextScene);
 		}
 	}
 

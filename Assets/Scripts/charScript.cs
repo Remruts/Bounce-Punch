@@ -11,6 +11,12 @@ public class charScript : MonoBehaviour {
 	public float hurtCooldown = 0.3f;
 	public float specialCharge = 0.2f;
 
+	lightPunchScript ltPunchScr;
+	heavyPunchScript hvPunchScr;
+	dodgeScript dodgeScr;
+	blockScript blockScr;
+	specialScript specialScr;
+
 	// Stats
 	[Header("Stats")]
 	[Tooltip("Strength")]
@@ -26,6 +32,7 @@ public class charScript : MonoBehaviour {
 	public GameObject markerPrefab;
 	public GameObject sparks;
 	public GameObject crystalDustPrefab;
+	public GameObject hitEffectPrefab;
 
 	Animator myAnim;
 	Rigidbody2D rb;
@@ -53,18 +60,27 @@ public class charScript : MonoBehaviour {
 	[HideInInspector]
 	public float life;
 
+	bool dead = false;
+
 	void Awake(){
 		myAnim = GetComponent<Animator> ();
 		rb = GetComponent<Rigidbody2D> ();
 		sprRenderer = GetComponent<SpriteRenderer> ();
+
+		ltPunchScr = GetComponent<lightPunchScript>();
+		hvPunchScr = GetComponent<heavyPunchScript>();
+		specialScr = GetComponent<specialScript>();
+		dodgeScr = GetComponent<dodgeScript>();
+		blockScr = GetComponent<blockScript>();
+
 	}
 
 	void Start () {
 		startPos = transform.position;
 		life = res;
 
-		marker = Instantiate (markerPrefab, 
-			new Vector2 (gameObject.transform.position.x, gameObject.transform.position.y + 0.7f), 
+		marker = Instantiate (markerPrefab,
+			new Vector2 (gameObject.transform.position.x, gameObject.transform.position.y + 0.7f),
 			Quaternion.identity) as GameObject;
 		marker.GetComponent<selectSprite> ().changeSprite (playerId - 1);
 
@@ -73,7 +89,7 @@ public class charScript : MonoBehaviour {
 		}
 
 		switch (playerId) {
-		case 1:			
+		case 1:
 			startOutlineColor = new Color (1f, 0f, 0.2f, 0.2f);
 			break;
 		case 2:
@@ -137,8 +153,13 @@ public class charScript : MonoBehaviour {
 
 			// No creo que sean necesarias las blast-zones...
 			// death / muerte
-			if (Mathf.Abs(transform.position.x) > 14 || Mathf.Abs(transform.position.y) > 8 || life <= 0) {
-				die ();
+			if (!dead){
+				if (Mathf.Abs(transform.position.x) > 14 || Mathf.Abs(transform.position.y) > 8 || life <= 0) {
+					myAnim.Play("moving", 0, 0);
+					myAnim.SetBool("hurt", false);
+					dead = true;
+					Invoke("die", 0.1f);
+				}
 			}
 
 			// Ajustar velocidad
@@ -162,12 +183,18 @@ public class charScript : MonoBehaviour {
 	}
 
 	void die(){
+
 		Instantiate (crystalDustPrefab, transform.position, Quaternion.identity);
 		camScript.screen.shake (0.1f, 0.5f);
 		hurtTimer = 0f;
 
-		myAnim.SetTrigger ("reset");
 		transform.position = startPos;
+		dead = false;
+
+		Transform sparks = transform.Find("sparks(Clone)");
+		if (sparks != null){
+			Destroy(sparks.gameObject);
+		}
 
 		if (lastHitPlayer > 0) {
 			managerScript.manager.givePoints (lastHitPlayer, 1);
@@ -226,21 +253,18 @@ public class charScript : MonoBehaviour {
 	}
 
 	void ltPunch(){
-		myAnim.SetTrigger ("ltpunch");
+		ltPunchScr.ltPunch();
 	}
 
-	void hvPunch(){		
-		myAnim.SetTrigger ("hvpunch");
-		GameObject parts = Instantiate (sparks, transform.position, Quaternion.identity) as GameObject;
-		parts.transform.parent = transform;
+	void hvPunch(){
+		hvPunchScr.hvPunch();
 	}
 
 	void special(){
 		if (specialMeter == 1f) {
-			camScript.screen.zoom (0.2f, 7f);
-			myAnim.SetTrigger ("special");
-			GameObject parts = Instantiate (sparks, transform.position, Quaternion.identity) as GameObject;
-			parts.transform.parent = transform;
+
+			specialScr.special();
+
 			specialMeter = 0f;
 			managerScript.manager.specialReset (playerId);
 
@@ -251,11 +275,11 @@ public class charScript : MonoBehaviour {
 	}
 
 	void block(){
-		myAnim.SetTrigger ("block");
+		blockScr.block();
 	}
 
 	void dodge(){
-		myAnim.SetTrigger ("dodge");
+		dodgeScr.dodge();
 	}
 
 	void OnCollisionEnter2D(Collision2D other){
@@ -269,7 +293,7 @@ public class charScript : MonoBehaviour {
 				if (specialMeter < 1f){
 					specialMeter += specialCharge;
 
-					if (specialMeter >= 1f) {						
+					if (specialMeter >= 1f) {
 						specialMeter = 1f;
 						outlineColor.a = 1f;
 						outlineSize = 2f;
@@ -295,7 +319,7 @@ public class charScript : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D other){
-		if (other.CompareTag ("Hitbox")) {			
+		if (other.CompareTag ("Hitbox")) {
 			if ((invensibilityTimer == 0) && (other.transform.parent != transform)){
 				hitboxScript hs = other.GetComponent<hitboxScript> ();
 				if (hs != null) {
@@ -334,6 +358,9 @@ public class charScript : MonoBehaviour {
 
 					// Quita vida dependiendo de la fuerza del otro
 					life = Mathf.Clamp (life - knockback * otherScript.str / 20f, 0, res);
+
+					// Creo un effecto de golpe
+					Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
 				}
 			}
 		}
@@ -364,7 +391,7 @@ public class charScript : MonoBehaviour {
 	void UpdateShader(){
 		MaterialPropertyBlock mpb = new MaterialPropertyBlock();
 		sprRenderer.GetPropertyBlock(mpb);
-		//mpb.SetFloat("_Outline", outline ? 1f : 0);
+		//mpb.SetFloat("_Outline", outline ? 1f : 0f);
 		mpb.SetColor("_OutlineColor", outlineColor);
 		mpb.SetFloat("_OutlineSize", outlineSize);
 		sprRenderer.SetPropertyBlock(mpb);
