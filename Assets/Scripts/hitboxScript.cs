@@ -7,4 +7,5 @@ public class hitboxScript : MonoBehaviour {
 	public float attack = 1f;
 	public bool invert = false;
 
+	public GameObject hitter;
 }

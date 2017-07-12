@@ -363,6 +363,53 @@ public class charScript : MonoBehaviour {
 					Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
 				}
 			}
+		} else if (other.CompareTag ("Projectile")){
+
+			GameObject father = other.gameObject.GetComponent<hitboxScript>().hitter;
+
+			if ((father != gameObject) &&(invensibilityTimer == 0) && (other.transform.parent != transform)){
+				hitboxScript hs = other.GetComponent<hitboxScript> ();
+				if (hs != null) {
+					AnimatorStateInfo state = myAnim.GetCurrentAnimatorStateInfo(0);
+
+					float knockback = hs.knockback; // fuerza de knockback
+					bool inverted = hs.invert; 		// Indica si va para el otro lado
+
+					if (!state.IsName ("block")) {
+						myAnim.SetBool ("hurt", true);
+						hurtTimer = hurtCooldown * hs.knockback;
+						invensibilityTimer = hurtCooldown / 2;
+					} else {
+						knockback /= 2;
+					}
+
+					camScript.screen.shake (0.1f, 0.5f * knockback);
+
+					float otherAngle = other.transform.rotation.eulerAngles.z;
+					if (inverted) {
+						otherAngle -= 180;
+						if (otherAngle < 0)
+							otherAngle += 360;
+					}
+					otherAngle = otherAngle * Mathf.Deg2Rad;
+					Vector2 dir = new Vector2 (Mathf.Cos (otherAngle), Mathf.Sin (otherAngle));
+
+					rb.velocity = dir.normalized * knockback * 10f /weight;
+
+					// Hacer que el que me pegó también tenga knockback
+					other.gameObject.GetComponent<Rigidbody2D> ().velocity = -dir.normalized * baseSpeed/2f * knockback;
+
+
+					charScript otherScript = father.GetComponent<charScript> ();
+					lastHitPlayer = otherScript.playerId; // el último que me pegó es el otro
+
+					// Quita vida dependiendo de la fuerza del otro
+					life = Mathf.Clamp (life - knockback * otherScript.str / 20f, 0, res);
+
+					// Creo un effecto de golpe
+					Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
+				}
+			}
 		}
 	}
 
