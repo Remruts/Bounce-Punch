@@ -4,15 +4,11 @@ using System.Collections;
 //[RequireComponent(typeof(SpriteRenderer))]
 public class paddleScript : MonoBehaviour {
 
-	//[Range(1, 4)]
-	public int playerId = 1;
+	int playerId;
 	public float radius = 6.5f;
 	public float maxSpeed = 7f;
 	public float acceleration = 0.7f;
-	//[Header("Air Friction")]
-	//[Space(10)]
-	//[Tooltip("Air Friction")]
-	//[ContextMenuItem("Say stuff", "stuff")]
+
 	[Range(0f, 1f)]
 	public float drag = 0.13f;
 
@@ -20,12 +16,8 @@ public class paddleScript : MonoBehaviour {
 	float angle = 0f;
 	float x, y;
 
-	//SpriteRenderer sprRenderer;
-
 	void Awake() {
-
-		//sprRenderer = GetComponent<SpriteRenderer> ();
-
+		playerId = GetComponent<paddleSettingsScript>().playerId;
 		speed = 0f;
 		angle = 0f;
 

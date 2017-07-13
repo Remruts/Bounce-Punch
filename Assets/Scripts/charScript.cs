@@ -10,12 +10,14 @@ public class charScript : MonoBehaviour {
 	public int playerId = 1;
 	public float hurtCooldown = 0.3f;
 	public float specialCharge = 0.2f;
+	public bool CPU = false;
 
 	lightPunchScript ltPunchScr;
 	heavyPunchScript hvPunchScr;
 	dodgeScript dodgeScr;
 	blockScript blockScr;
 	specialScript specialScr;
+	idleScript idleScr;
 
 	// Stats
 	[Header("Stats")]
@@ -72,6 +74,7 @@ public class charScript : MonoBehaviour {
 		specialScr = GetComponent<specialScript>();
 		dodgeScr = GetComponent<dodgeScript>();
 		blockScr = GetComponent<blockScript>();
+		idleScr = GetComponent<idleScript>();
 
 	}
 
@@ -209,58 +212,62 @@ public class charScript : MonoBehaviour {
 
 	void idle(){
 
-		float cX = Input.GetAxis("j" + playerId + "Horizontal");
-		float cY = -Input.GetAxis("j" + playerId + "Vertical");
+		if (!CPU){
+			float cX = Input.GetAxis("j" + playerId + "Horizontal");
+			float cY = -Input.GetAxis("j" + playerId + "Vertical");
 
-		if (Mathf.Abs (cX) > 0.05 || Mathf.Abs (cY) > 0.05) {
-			angle = Mathf.Atan2 (cY, cX) * Mathf.Rad2Deg;
+			if (Mathf.Abs (cX) > 0.05 || Mathf.Abs (cY) > 0.05) {
+				angle = Mathf.Atan2 (cY, cX) * Mathf.Rad2Deg;
 
-			if (angle < 0) {
-				angle += 360;
-			} else if (angle > 360) {
-				angle -= 360; // esto no va a pasar nunca...
-			}
+				if (angle < 0) {
+					angle += 360;
+				} else if (angle > 360) {
+					angle -= 360; // esto no va a pasar nunca...
+				}
 
-			if (angle > 90 && angle < 270) {
-				sprRenderer.flipY = true;
+				if (angle > 90 && angle < 270) {
+					sprRenderer.flipY = true;
+				} else {
+					sprRenderer.flipY = false;
+				}
+
+				transform.rotation = Quaternion.AngleAxis (angle, Vector3.forward);
+
+				if (!tapStick) {
+					timeToPunch = punchReactionTime;
+					tapStick = true;
+				}
 			} else {
-				sprRenderer.flipY = false;
+				tapStick = false;
 			}
 
-			transform.rotation = Quaternion.AngleAxis (angle, Vector3.forward);
-
-			if (!tapStick) {
-				timeToPunch = punchReactionTime;
-				tapStick = true;
+			if (Input.GetButtonDown ("j" + playerId + "Attack")) {
+				if (timeToPunch > 0) {
+					hvPunch ();
+				} else {
+					ltPunch ();
+				}
+			} else if (Input.GetButtonDown ("j" + playerId + "Special")) {
+				special ();
+			} else if (Input.GetButtonDown ("j" + playerId + "Block")) {
+				block ();
+			} else if (Input.GetButtonDown ("j" + playerId + "Evade")) {
+				dodge ();
 			}
 		} else {
-			tapStick = false;
-		}
-
-		if (Input.GetButtonDown ("j" + playerId + "Attack")) {
-			if (timeToPunch > 0) {
-				hvPunch ();
-			} else {
-				ltPunch ();
-			}
-		} else if (Input.GetButtonDown ("j" + playerId + "Special")) {
-			special ();
-		} else if (Input.GetButtonDown ("j" + playerId + "Block")) {
-			block ();
-		} else if (Input.GetButtonDown ("j" + playerId + "Evade")) {
-			dodge ();
+			idleScr.idle();
 		}
 	}
 
-	void ltPunch(){
+	public void ltPunch(){
 		ltPunchScr.ltPunch();
 	}
 
-	void hvPunch(){
+	public void hvPunch(){
 		hvPunchScr.hvPunch();
 	}
 
-	void special(){
+	public void special(){
 		if (specialMeter == 1f) {
 
 			specialScr.special();
@@ -274,18 +281,17 @@ public class charScript : MonoBehaviour {
 		}
 	}
 
-	void block(){
+	public void block(){
 		blockScr.block();
 	}
 
-	void dodge(){
+	public void dodge(){
 		dodgeScr.dodge();
 	}
 
 	void OnCollisionEnter2D(Collision2D other){
 		if (other.collider.CompareTag ("Paddle")) {
-
-			if (other.gameObject.GetComponent<paddleScript> ().playerId == playerId) {
+			if (other.gameObject.GetComponent<paddleSettingsScript> ().playerId == playerId) {
 				// Sólo si es mi paleta
 				// El último que me pegó no es nadie
 				lastHitPlayer = 0;
@@ -304,7 +310,7 @@ public class charScript : MonoBehaviour {
 			}
 
 			// EXPERIMENTAL: normalizar velocidad
-			if (Input.GetButton("j" + playerId + "CW") && Input.GetButton("j" + playerId + "CCW")){
+			if (!CPU && Input.GetButton("j" + playerId + "CW") && Input.GetButton("j" + playerId + "CCW")){
 				rb.velocity = rb.velocity.normalized * baseSpeed;
 			}
 

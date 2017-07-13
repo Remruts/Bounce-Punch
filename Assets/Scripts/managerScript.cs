@@ -8,6 +8,7 @@ public class managerScript : MonoBehaviour {
 
 	public static managerScript manager;
 	public GameObject paddlePrefab;
+	public GameObject AIPaddlePrefab;
 	public GameObject plus1Prefab;
 	public GameObject UIBarPrefab;
 	public GameObject Canvas;
@@ -107,12 +108,22 @@ public class managerScript : MonoBehaviour {
 			}
 
 			// Instancio paleta
-			paddles.Add( Instantiate(paddlePrefab) as GameObject);
-			paddleScript pd = paddles[i-1].GetComponent<paddleScript>();
-			pd.playerId = i;
-			pd.setAngle(startAngle);
-			pd.radius = paddleRad;
-			paddles [i - 1].GetComponent<selectSprite> ().changeSprite (i - 1);
+			if (scr.CPU){
+				paddles.Add( Instantiate(AIPaddlePrefab) as GameObject);
+				AIPaddleScript pd = paddles[i-1].GetComponent<AIPaddleScript>();
+				pd.target = c;
+				pd.setAngle(startAngle);
+				pd.radius = paddleRad;
+				paddles [i - 1].GetComponent<selectSprite> ().changeSprite (i - 1);
+			} else {
+				paddles.Add( Instantiate(paddlePrefab) as GameObject);
+				paddleScript pd = paddles[i-1].GetComponent<paddleScript>();
+				pd.setAngle(startAngle);
+				pd.radius = paddleRad;
+				paddles [i - 1].GetComponent<selectSprite> ().changeSprite (i - 1);
+			}
+			paddleSettingsScript pss = paddles[i-1].GetComponent<paddleSettingsScript>();
+			pss.playerId = i;
 
 			// puntos
 			//playerPoints[i] = 0;
