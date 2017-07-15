@@ -18,7 +18,7 @@ public class cowzerkerboyspecialScript : specialScript {
 
 		camScript.screen.zoom (0.2f, 7f);
 		myAnim.runtimeAnimatorController = Resources.Load("berzerkAnimator") as RuntimeAnimatorController;
-		Invoke("returnToSadness", 10f);
+		Invoke("returnToSadness", 12f);
 
 		myScript.str = 5f;
 		myScript.weight = 5f;

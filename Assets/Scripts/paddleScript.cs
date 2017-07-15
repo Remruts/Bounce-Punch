@@ -17,12 +17,15 @@ public class paddleScript : MonoBehaviour {
 	float x, y;
 
 	void Awake() {
-		playerId = GetComponent<paddleSettingsScript>().playerId;
 		speed = 0f;
 		angle = 0f;
 
 		x = radius;
 		y = 0f;
+	}
+
+	void Start(){
+		playerId = GetComponent<paddleSettingsScript>().playerId;
 	}
 
 	void FixedUpdate () {

@@ -12,7 +12,7 @@ public class destroyOnCollision : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D other){
-		if (other.CompareTag ("Player")){
+		if (other.CompareTag ("Player") || other.CompareTag ("Hitbox") || other.CompareTag ("Projectile")){
 			if (hitter != other.gameObject){
 				Destroy(gameObject);
 				if (explosion != null){
