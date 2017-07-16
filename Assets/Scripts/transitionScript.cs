@@ -2,7 +2,6 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 
-[ExecuteInEditMode]
 public class transitionScript : MonoBehaviour {
 
 	public Material EffectMaterial;
@@ -33,14 +32,16 @@ public class transitionScript : MonoBehaviour {
 			if (invert) {
 				if (cutoff > 0) {
 					cutoff -= Time.deltaTime / (transitionTime * Time.timeScale);
-					if (cutoff < 0) {
+					if (cutoff <= 0) {
 						cutoff = 0f;
+						transitioning = false;
+						invert = false;
 					}
 				}
 			} else {
 				if (cutoff < 1) {
 					cutoff += Time.deltaTime / (transitionTime * Time.timeScale);
-					if (cutoff > 1) {
+					if (cutoff >= 1) {
 						cutoff = 1f;
 
 						if (level != ""){
