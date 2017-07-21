@@ -16,15 +16,29 @@ public class tokenScript : MonoBehaviour {
 				portrait.sprite = scr.portrait;
 				playerText.text = scr.characterName;
 
+				GameObject chr;
 				if (CPU){
-					GameObject chr =  scr.AICharacter;
-					settingsScript.settings.characters[playerId-1] = chr;
+					chr =  scr.AICharacter;
 				} else {
-					GameObject chr =  scr.character;
-					settingsScript.settings.characters[playerId-1] = chr;
+					chr =  scr.character;
 				}
+				settingsScript.settings.characters[playerId-1] = chr;
 
+			} else if (other.CompareTag("randomButton")){
+				randomButtonScript scr = other.gameObject.GetComponent<randomButtonScript>();
+				int seed = scr.getCharSeed();
+
+				portrait.sprite = scr.portrait;
+				playerText.text = "???";
+				GameObject chr;
+				if (CPU){
+					chr = scr.AICharacter[seed];
+				} else{
+					chr = scr.character[seed];
+				}
+				settingsScript.settings.characters[playerId-1] = chr;
 			}
 		}
+
 	}
 }
