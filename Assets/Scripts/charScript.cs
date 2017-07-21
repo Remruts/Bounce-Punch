@@ -157,7 +157,7 @@ public class charScript : MonoBehaviour {
 			// No creo que sean necesarias las blast-zones...
 			// death / muerte
 			if (!dead){
-				if (Mathf.Abs(transform.position.x) > 14 || Mathf.Abs(transform.position.y) > 8 || life <= 0) {
+				if (Mathf.Abs(transform.position.x) > 10 || Mathf.Abs(transform.position.y) > 8 || life <= 0) {
 					myAnim.Play("moving", 0, 0);
 					myAnim.SetBool("hurt", false);
 					dead = true;

@@ -56,6 +56,16 @@ public class settingsScript : MonoBehaviour {
 		return winner;
 	}
 
+	public int getPlayerNumber(){
+		int n = 0;
+		foreach (GameObject ch in characters){
+			if (ch != null){
+				n++;
+			}
+		}
+		return n;
+	}
+
 }
 
 [Serializable]

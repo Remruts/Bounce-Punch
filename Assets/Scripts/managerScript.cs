@@ -25,9 +25,9 @@ public class managerScript : MonoBehaviour {
 	int playerNum;
 	float currentTime = 0;
 
-	List<GameObject> activeChars;
-	List<GameObject> paddles;
-	List<GameObject> UIBars;
+	GameObject[] activeChars;
+	GameObject[] paddles;
+	GameObject[] UIBars;
 	Text[] pointCounters;
 	int[] playerPoints;
 
@@ -40,9 +40,9 @@ public class managerScript : MonoBehaviour {
 			}
 		}
 
-		playerNum = settingsScript.settings.characters.Length;
-		playerPoints = new int[playerNum];
-		pointCounters = new Text[playerNum];
+		playerNum = settingsScript.settings.getPlayerNumber();
+		playerPoints = new int[4];
+		pointCounters = new Text[4];
 
 		currentTime = settingsScript.settings.matchTime;
 
@@ -74,18 +74,25 @@ public class managerScript : MonoBehaviour {
 		float cX, cY;
 		float radAngle;
 
-		activeChars = new List<GameObject>();
-		paddles = new List<GameObject>();
-		UIBars = new List<GameObject> ();
-		int i = 1;
+		activeChars = new GameObject[4];
+		paddles = new GameObject[4];
+		UIBars = new GameObject[4];
 
-		foreach(var chara in settingsScript.settings.characters){
+		int i = 0;
+		for (int j = 0; j < 4; j++){
+
+			GameObject chara = settingsScript.settings.characters[j];
 
 			//Barra de UI
 			GameObject ui = Instantiate (UIBarPrefab) as GameObject;
-			UIBars.Add (ui);
+			UIBars[j] = ui;
 			ui.transform.SetParent(Canvas.transform, false);
-			setUIBar (i-1, 10);
+			setUIBar (j, 10);
+
+			if (chara == null){
+				ui.SetActive(false);
+				continue;
+			}
 
 			//Ángulo
 			radAngle = startAngle * Mathf.Deg2Rad;
@@ -96,11 +103,11 @@ public class managerScript : MonoBehaviour {
 			// Instancio Personaje
 			GameObject c = Instantiate(chara, new Vector3(cX, cY, 0), Quaternion.identity) as GameObject;
 
-			activeChars.Add(c);
+			activeChars[j] = c;
 
 			charScript scr = c.GetComponent<charScript>();
 			if (scr != null){
-				scr.playerId = i;
+				scr.playerId = j+1;
 				scr.launch(startAngle);
 				//resetChar (i);
 			} else {
@@ -109,32 +116,27 @@ public class managerScript : MonoBehaviour {
 
 			// Instancio paleta
 			if (scr.CPU){
-				paddles.Add( Instantiate(AIPaddlePrefab) as GameObject);
-				AIPaddleScript pd = paddles[i-1].GetComponent<AIPaddleScript>();
+				paddles[j] = Instantiate(AIPaddlePrefab) as GameObject;
+				AIPaddleScript pd = paddles[j].GetComponent<AIPaddleScript>();
 				pd.target = c;
 				pd.setAngle(startAngle);
 				pd.radius = paddleRad;
-				paddles [i - 1].GetComponent<selectSprite> ().changeSprite (i - 1);
+				paddles[j].GetComponent<selectSprite>().changeSprite(j);
 			} else {
-				paddles.Add( Instantiate(paddlePrefab) as GameObject);
-				paddleScript pd = paddles[i-1].GetComponent<paddleScript>();
+				paddles[j] = Instantiate(paddlePrefab) as GameObject;
+				paddleScript pd = paddles[j].GetComponent<paddleScript>();
 				pd.setAngle(startAngle);
 				pd.radius = paddleRad;
-				paddles [i - 1].GetComponent<selectSprite> ().changeSprite (i - 1);
+				paddles[j].GetComponent<selectSprite>().changeSprite(j);
 			}
-			paddleSettingsScript pss = paddles[i-1].GetComponent<paddleSettingsScript>();
-			pss.playerId = i;
-
-			// puntos
-			//playerPoints[i] = 0;
-
-			// Próximo
-			i++;
+			paddleSettingsScript pss = paddles[j].GetComponent<paddleSettingsScript>();
+			pss.playerId = j+1;
 
 			startAngle -= angDiv;
 			if (startAngle < 0){
 				startAngle += 360;
 			}
+			i++;
 		}
 	}
 

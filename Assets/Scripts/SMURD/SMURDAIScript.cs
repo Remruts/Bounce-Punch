@@ -18,7 +18,9 @@ public class SMURDAIScript : idleScript {
 
 	override public void idle(){
 		handleRotation();
-		checkHvPunch();
+		checkLaser(Vector3.zero);
+		checkLaser(transform.up);
+		checkLaser(-transform.up);
 		checkDodge();
 	}
 
@@ -38,7 +40,28 @@ public class SMURDAIScript : idleScript {
 		}
 	}
 
-	void checkHvPunch(){
+	void checkLaser(Vector3 pos){
+
+		Debug.DrawLine(transform.position, transform.position+ transform.right);
+		RaycastHit2D hit = Physics2D.Raycast(transform.position + transform.right + pos, transform.right);
+
+		if (hit.collider != null) {
+			if (hit.collider.tag.Equals("Player")){
+				if (hit.collider.gameObject == gameObject){
+					return;
+				}
+				if (Random.value < 0.1){
+					scr.ltPunch();
+				} else if (Random.value < 0.05){
+					scr.hvPunch();
+				} else if (Random.value < 0.05){
+					scr.special();
+				}
+			}
+		}
+
+
+		/*
 		Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, 6f);
 		for (int i = 0; i < hitColliders.Length; ++i){
 			if (hitColliders[i].tag.Equals("Player")){
@@ -54,6 +77,7 @@ public class SMURDAIScript : idleScript {
 				}
 			}
 		}
+		*/
 	}
 
 	void handleRotation(){

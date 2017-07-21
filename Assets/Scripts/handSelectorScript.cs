@@ -16,12 +16,17 @@ public class handSelectorScript : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		float screenWidth = Screen.width;
+		float screenHeight = Screen.height;
+		Vector3 pos = new Vector3(screenWidth-32, screenHeight-32, 0);
+		Vector3 screenPos = Camera.main.ScreenToWorldPoint(pos);
+
 		float cX = Input.GetAxis("j" + playerId + "Horizontal");
 		float cY = -Input.GetAxis("j" + playerId + "Vertical");
 		if (Mathf.Abs (cX) > 0.05 || Mathf.Abs (cY) > 0.05) {
 			Vector3 newPos = transform.position + new Vector3(cX, cY, 0) * 1.5f;
-			newPos.x = Mathf.Clamp(newPos.x, -10f, 10f);
-			newPos.y = Mathf.Clamp(newPos.y, -5f, 5f);
+			newPos.x = Mathf.Clamp(newPos.x, -screenPos.x, screenPos.x);
+			newPos.y = Mathf.Clamp(newPos.y, -screenPos.y, screenPos.y);
 			transform.position = newPos;
 		}
 
@@ -49,9 +54,11 @@ public class handSelectorScript : MonoBehaviour {
 					transitionScript.transition.startTransition(2f);
 					break;
 				}else if (hitColliders[i].tag.Equals("startButton")){
-					transitionScript.transition.level = "gameScene";
-					transitionScript.transition.startTransition(2f);
-					break;
+					if (settingsScript.settings.getPlayerNumber() >= 2){
+						transitionScript.transition.level = "gameScene";
+						transitionScript.transition.startTransition(2f);
+						break;
+					}
 				} else if (hitColliders[i].tag.Equals("playerCard")){
 					if (!tokenTaken){
 						hitColliders[i].gameObject.GetComponent<playerCardScript>().toggle();

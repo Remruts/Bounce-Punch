@@ -6,6 +6,7 @@ public class playerCardScript : MonoBehaviour {
 
 	public int playerId;
 	public Sprite CPUCard;
+	public Sprite ClosedCard;
 	public GameObject myToken;
 	public GameObject CPUToken;
 	public SpriteRenderer portrait;
@@ -28,6 +29,12 @@ public class playerCardScript : MonoBehaviour {
 			sprRnd.sprite = CPUCard;
 			myToken.SetActive(false);
 			CPUToken.SetActive(true);
+		} else if (sprRnd.sprite == CPUCard){
+			settingsScript.settings.characters[playerId-1] = null;
+			portrait.sprite = null;
+			sprRnd.sprite = ClosedCard;
+			myToken.SetActive(false);
+			CPUToken.SetActive(false);
 		} else {
 			settingsScript.settings.characters[playerId-1] = ribbon;
 			portrait.sprite = RibbonPortrait;
