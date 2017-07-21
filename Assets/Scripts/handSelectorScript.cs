@@ -74,6 +74,16 @@ public class handSelectorScript : MonoBehaviour {
 						tokenTaken = true;
 					}
 					break;
+				} else if (hitColliders[i].tag.Equals("arrowRight")){
+					settingsScript.settings.matchTime += 30;
+					if (settingsScript.settings.matchTime > 990){
+						settingsScript.settings.matchTime = 30;
+					}
+				} else if (hitColliders[i].tag.Equals("arrowLeft")){
+					settingsScript.settings.matchTime -= 30;
+					if (settingsScript.settings.matchTime < 30){
+						settingsScript.settings.matchTime = 990;
+					}
 				}
 			}
 		}
@@ -82,5 +92,16 @@ public class handSelectorScript : MonoBehaviour {
 				myAnim.SetBool("close", false);
 			}
 		}
+	}
+
+	public void releaseToken(){
+		myAnim.SetBool("close", false);
+		tokenTaken = false;
+		foreach(Transform child in transform){
+			if (child.gameObject.tag.Equals("CPUToken") || child.gameObject.tag.Equals("token")){
+				child.parent = null;
+			}
+		}
+
 	}
 }
