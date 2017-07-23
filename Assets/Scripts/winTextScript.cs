@@ -1,14 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using UnityEngine.SceneManagement;
-
 
 public class winTextScript : MonoBehaviour {
 
 	Text txt;
 	int winner = -1;
-	public string nextScene = "gameScene";
 
 	// Use this for initialization
 	void Start () {
@@ -27,10 +24,5 @@ public class winTextScript : MonoBehaviour {
 		transitionScript.transition.startTransition (1.7f);
 	}
 
-	void Update(){
-		if (Input.GetButtonDown ("j1Start")){
-			SceneManager.LoadScene (nextScene);
-		}
-	}
 
 }

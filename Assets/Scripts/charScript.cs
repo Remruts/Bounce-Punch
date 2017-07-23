@@ -199,10 +199,15 @@ public class charScript : MonoBehaviour {
 			Destroy(sparks.gameObject);
 		}
 
+		managerScript.manager.addDeath(playerId);
+
+
 		if (lastHitPlayer > 0) {
 			managerScript.manager.givePoints (lastHitPlayer, 1);
+			managerScript.manager.addKO(lastHitPlayer);
 		} else if (lastHitPlayer < 0) {
 			managerScript.manager.givePoints (playerId, -1);
+			managerScript.manager.addSD(playerId);
 		}
 
 		lastHitPlayer = -1;

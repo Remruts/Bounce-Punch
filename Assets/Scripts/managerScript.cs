@@ -30,6 +30,9 @@ public class managerScript : MonoBehaviour {
 	GameObject[] UIBars;
 	Text[] pointCounters;
 	int[] playerPoints;
+	int[] playerDeaths;
+	int[] playerSDs;
+	int[] playerKOs;
 
 	void Start () {
 		if (manager == null){
@@ -41,7 +44,12 @@ public class managerScript : MonoBehaviour {
 		}
 
 		playerNum = settingsScript.settings.getPlayerNumber();
+		settingsScript.settings.resetScores();
+
 		playerPoints = new int[4];
+		playerDeaths = new int[4];
+		playerSDs = new int[4];
+		playerKOs = new int[4];
 		pointCounters = new Text[4];
 
 		currentTime = settingsScript.settings.matchTime;
@@ -265,7 +273,7 @@ public class managerScript : MonoBehaviour {
 		int winner = -1;
 		int winnerPoints = 0;
 
-		for (int i = 0; i < playerNum; ++i) {
+		for (int i = 0; i < 4; ++i) {
 			if (playerPoints [i] > winnerPoints) {
 				winner = i;
 				winnerPoints = playerPoints [i];
@@ -275,6 +283,30 @@ public class managerScript : MonoBehaviour {
 		}
 
 		settingsScript.settings.setWinner (winner);
+	}
+
+	public void addKO(int id){
+		if (!playing) {
+			return;
+		}
+		playerKOs[id-1] += 1;
+		settingsScript.settings.setKOs(id - 1, playerKOs[id-1]);
+	}
+
+	public void addSD(int id){
+		if (!playing) {
+			return;
+		}
+		playerSDs[id-1] += 1;
+		settingsScript.settings.setSDs(id - 1, playerSDs[id-1]);
+	}
+
+	public void addDeath(int id){
+		if (!playing) {
+			return;
+		}
+		playerDeaths[id-1] += 1;
+		settingsScript.settings.setDeaths(id - 1, playerDeaths[id-1]);
 	}
 
 	public void givePoints(int id, int points){
@@ -287,6 +319,8 @@ public class managerScript : MonoBehaviour {
 			playerPoints [id - 1] = 0;
 		}
 		pointCounters [id - 1].text = playerPoints [id - 1].ToString();
+
+		settingsScript.settings.setScore(id - 1, playerPoints[id-1]);
 
 		if (points > 0) {
 			GameObject plus1obj = Instantiate(plus1Prefab,

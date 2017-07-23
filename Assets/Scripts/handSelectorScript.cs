@@ -79,11 +79,13 @@ public class handSelectorScript : MonoBehaviour {
 					if (settingsScript.settings.matchTime > 990){
 						settingsScript.settings.matchTime = 30;
 					}
+					break;
 				} else if (hitColliders[i].tag.Equals("arrowLeft")){
 					settingsScript.settings.matchTime -= 30;
 					if (settingsScript.settings.matchTime < 30){
 						settingsScript.settings.matchTime = 990;
 					}
+					break;
 				}
 			}
 		}

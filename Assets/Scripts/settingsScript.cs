@@ -16,10 +16,17 @@ public class settingsScript : MonoBehaviour {
 
 	private int winner = -1;
 
+	int[] scores;
+	int[] KOs;
+	int[] SDs;
+	int[] deaths;
+
 	void Awake () {
 		if (settings == null){
 			DontDestroyOnLoad(gameObject);
 			settings = this;
+
+			resetScores();
 		} else if (settings != this){
 			Destroy(gameObject);
 		}
@@ -64,6 +71,39 @@ public class settingsScript : MonoBehaviour {
 			}
 		}
 		return n;
+	}
+
+	public void setScore(int id, int score){
+		scores[id] = score;
+	}
+	public void setKOs(int id, int ko){
+		KOs[id] = ko;
+	}
+	public void setSDs(int id, int sd){
+		SDs[id] = sd;
+	}
+	public void setDeaths(int id, int deathnum){
+		deaths[id] = deathnum;
+	}
+
+	public int getScore(int i){
+		return scores[i];
+	}
+	public int getKO(int i){
+		return KOs[i];
+	}
+	public int getSD(int i){
+		return SDs[i];
+	}
+	public int getDeaths(int i){
+		return deaths[i];
+	}
+
+	public void resetScores(){
+		scores = new int[4];
+		KOs = new int[4];
+		SDs = new int[4];
+		deaths = new int[4];
 	}
 
 }
