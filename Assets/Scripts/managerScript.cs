@@ -198,6 +198,15 @@ public class managerScript : MonoBehaviour {
 		if (playing) {
 			// check pause
 			if (paused) {
+				for (int i = 1; i < 5; ++i){
+					if (Input.GetButton("j" + i + "Attack") && Input.GetButton("j" + i + "Block")){
+						paused = false;
+						playing = false;
+						Time.timeScale = 0.1f;
+						playerPoints = new int[4];
+						StartCoroutine(endGame(transitionTime * 0.1f));						
+					}
+				}
 				if (Input.GetButtonDown ("j" + (pausedPlayer + 1) + "Start")) {
 					paused = false;
 					Time.timeScale = 1f;
