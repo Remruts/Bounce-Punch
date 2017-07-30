@@ -43,27 +43,28 @@ public class paddleScript : MonoBehaviour {
 			x = Mathf.Cos(angle2Rad) * radius;
 			y = Mathf.Sin(angle2Rad) * radius;
 
-			if (Input.GetButton("j" + playerId + "CCW")){
+
+			if (inputManager.inputman.CCW(playerId-1)){
 				if (speed < maxSpeed)
 					speed += acceleration;
 			}
 
-			if (Input.GetButton("j" + playerId + "CW")){
+			if (inputManager.inputman.CW(playerId-1)){
 				if (speed > -maxSpeed)
 					speed -= acceleration;
 			}
 
-			if (Input.GetButton("j" + playerId + "CCW2")){
+			if (inputManager.inputman.CCWSlow(playerId-1)){
 				if (speed < maxSpeed)
-					speed += acceleration/2;
+					speed += acceleration/2f;
 			}
 
-			if (Input.GetButton("j" + playerId + "CW2")){
+			if (inputManager.inputman.CWSlow(playerId-1)){
 				if (speed > -maxSpeed)
-					speed -= acceleration/2;
+					speed -= acceleration/2f;
 			}
 
-			if (Input.GetButton ("j" + playerId + "CW") && Input.GetButton ("j" + playerId + "CCW")) {
+			if (inputManager.inputman.CW(playerId-1) && inputManager.inputman.CCW(playerId-1)) {
 				// TODO: Agregar shader a paleta, tal vez.
 				// O sea, una forma de identificar que neutraliza
 			}

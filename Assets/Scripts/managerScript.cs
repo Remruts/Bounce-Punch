@@ -123,7 +123,7 @@ public class managerScript : MonoBehaviour {
 			}
 
 			// Instancio paleta
-			if (scr.CPU){
+			if (scr.CPU || settingsScript.settings.autoPaddles[j]){
 				paddles[j] = Instantiate(AIPaddlePrefab) as GameObject;
 				AIPaddleScript pd = paddles[j].GetComponent<AIPaddleScript>();
 				pd.target = c;
@@ -198,23 +198,23 @@ public class managerScript : MonoBehaviour {
 		if (playing) {
 			// check pause
 			if (paused) {
-				for (int i = 1; i < 5; ++i){
-					if (Input.GetButton("j" + i + "Attack") && Input.GetButton("j" + i + "Block")){
+				for (int i = 0; i < 4; ++i){
+					if (inputManager.inputman.Attack(i) && inputManager.inputman.Block(i)){
 						paused = false;
 						playing = false;
 						Time.timeScale = 0.1f;
 						playerPoints = new int[4];
-						StartCoroutine(endGame(transitionTime * 0.1f));						
+						StartCoroutine(endGame(transitionTime * 0.1f));
 					}
 				}
-				if (Input.GetButtonDown ("j" + (pausedPlayer + 1) + "Start")) {
+				if (inputManager.inputman.StartButton(pausedPlayer)) {
 					paused = false;
 					Time.timeScale = 1f;
 				}
 				timerText.text = "BOUNCE\nPUNCH!";
 			} else {
 				for (int i = 0; i < playerNum; ++i) {
-					if (Input.GetButtonDown ("j" + (i + 1) + "Start")) {
+					if (inputManager.inputman.StartButton(i)) {
 						paused = true;
 						pausedPlayer = i;
 						Time.timeScale = 0f;

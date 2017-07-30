@@ -157,7 +157,10 @@ public class charScript : MonoBehaviour {
 			// No creo que sean necesarias las blast-zones...
 			// death / muerte
 			if (!dead){
-				if (Mathf.Abs(transform.position.x) > 10 || Mathf.Abs(transform.position.y) > 8 || life <= 0) {
+				Vector3 pos = new Vector3(Screen.width, Screen.height, 0);
+				Vector3 screenPos = Camera.main.ScreenToWorldPoint(pos);
+
+				if (Mathf.Abs(transform.position.x) > screenPos.x + 1f || Mathf.Abs(transform.position.y) > screenPos.y + 1f || life <= 0) {
 					myAnim.Play("moving", 0, 0);
 					myAnim.SetBool("hurt", false);
 					dead = true;
@@ -197,6 +200,10 @@ public class charScript : MonoBehaviour {
 		Transform sparks = transform.Find("sparks(Clone)");
 		if (sparks != null){
 			Destroy(sparks.gameObject);
+		}
+		Transform beam = transform.Find("beamGenerator(Clone)");
+		if (beam != null){
+			Destroy(beam.gameObject);
 		}
 
 		managerScript.manager.addDeath(playerId);
@@ -246,17 +253,18 @@ public class charScript : MonoBehaviour {
 				tapStick = false;
 			}
 
-			if (Input.GetButtonDown ("j" + playerId + "Attack")) {
+
+			if (inputManager.inputman.Attack(playerId-1)) {
 				if (timeToPunch > 0) {
 					hvPunch ();
 				} else {
 					ltPunch ();
 				}
-			} else if (Input.GetButtonDown ("j" + playerId + "Special")) {
+			} else if (inputManager.inputman.Special(playerId-1)) {
 				special ();
-			} else if (Input.GetButtonDown ("j" + playerId + "Block")) {
+			} else if (inputManager.inputman.Block(playerId-1)) {
 				block ();
-			} else if (Input.GetButtonDown ("j" + playerId + "Evade")) {
+			} else if (inputManager.inputman.Dodge(playerId-1)) {
 				dodge ();
 			}
 		} else {
@@ -315,7 +323,7 @@ public class charScript : MonoBehaviour {
 			}
 
 			// EXPERIMENTAL: normalizar velocidad
-			if (!CPU && Input.GetButton("j" + playerId + "CW") && Input.GetButton("j" + playerId + "CCW")){
+			if (!CPU && inputManager.inputman.CW(playerId-1) && inputManager.inputman.CCW(playerId-1)){
 				rb.velocity = rb.velocity.normalized * baseSpeed;
 			}
 
@@ -406,9 +414,6 @@ public class charScript : MonoBehaviour {
 					Vector2 dir = new Vector2 (Mathf.Cos (otherAngle), Mathf.Sin (otherAngle));
 
 					rb.velocity = dir.normalized * knockback * 10f /weight;
-
-					// Hacer que el que me pegó también tenga knockback
-					other.gameObject.GetComponent<Rigidbody2D> ().velocity = -dir.normalized * baseSpeed/2f * knockback;
 
 
 					charScript otherScript = father.GetComponent<charScript> ();

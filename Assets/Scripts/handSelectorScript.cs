@@ -18,7 +18,7 @@ public class handSelectorScript : MonoBehaviour {
 	void Update () {
 		float screenWidth = Screen.width;
 		float screenHeight = Screen.height;
-		Vector3 pos = new Vector3(screenWidth-32, screenHeight-32, 0);
+		Vector3 pos = new Vector3(screenWidth-32, screenHeight, 0);
 		Vector3 screenPos = Camera.main.ScreenToWorldPoint(pos);
 
 		float cX = Input.GetAxis("j" + playerId + "Horizontal");
@@ -59,6 +59,14 @@ public class handSelectorScript : MonoBehaviour {
 						transitionScript.transition.startTransition(2f);
 						break;
 					}
+				} else if (hitColliders[i].tag.Equals("autoButton")){
+					if (!tokenTaken){
+						autoButtonScript scr =  hitColliders[i].gameObject.GetComponent<autoButtonScript>();
+						if (scr.id == playerId){
+							scr.toggle();
+						}
+					}
+					break;
 				} else if (hitColliders[i].tag.Equals("playerCard")){
 					if (!tokenTaken){
 						hitColliders[i].gameObject.GetComponent<playerCardScript>().toggle();

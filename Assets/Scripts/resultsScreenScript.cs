@@ -32,8 +32,10 @@ public class resultsScreenScript : MonoBehaviour {
 	}
 
 	void Update(){
-		if (Input.GetButtonDown ("j1Start")){
-			SceneManager.LoadScene (nextScene);
+		for (int i=0; i<4; ++i){
+			if (inputManager.inputman.StartButton(i)){
+				SceneManager.LoadScene (nextScene);
+			}
 		}
 	}
 }

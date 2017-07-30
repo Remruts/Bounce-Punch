@@ -15,7 +15,7 @@ public class SMURDltpunchScript : lightPunchScript {
 	override public void ltPunch(){
 
 		myAnim.SetTrigger ("ltpunch");
-		Invoke("shootLaser", 0.1f);
+		Invoke("shootLaser", 0.05f);
 	}
 
 	void shootLaser(){

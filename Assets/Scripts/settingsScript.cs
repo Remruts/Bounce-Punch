@@ -9,6 +9,7 @@ public class settingsScript : MonoBehaviour {
 	public static settingsScript settings;
 
 	public GameObject[] characters;
+	public bool[] autoPaddles;
 
 	//match settings
 	public int maxLives;		// maxLives that each player has
@@ -29,6 +30,10 @@ public class settingsScript : MonoBehaviour {
 			resetScores();
 		} else if (settings != this){
 			Destroy(gameObject);
+		}
+		autoPaddles = new bool[4];
+		for (int i = 0; i < 4; ++i){
+			autoPaddles[i] = false;
 		}
 	}
 

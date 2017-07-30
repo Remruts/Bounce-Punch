@@ -59,6 +59,10 @@ public class transitionScript : MonoBehaviour {
 
 	}
 
+	public void setTransition(string transition){
+		level = transition;
+	}
+
 	void OnRenderImage(RenderTexture src, RenderTexture dst){
 		Graphics.Blit (src, dst, EffectMaterial);
 	}

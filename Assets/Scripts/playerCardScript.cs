@@ -19,6 +19,8 @@ public class playerCardScript : MonoBehaviour {
 
 	public TextMesh playerText;
 
+	public GameObject manualButton;
+
 	Sprite myCard;
 	SpriteRenderer sprRnd;
 	void Start(){
@@ -36,6 +38,7 @@ public class playerCardScript : MonoBehaviour {
 			myToken.SetActive(false);
 			CPUToken.SetActive(true);
 			playerText.text = "Ribbon";
+			manualButton.SetActive(false);
 
 		} else if (sprRnd.sprite == CPUCard){
 			settingsScript.settings.characters[playerId-1] = null;
@@ -51,7 +54,8 @@ public class playerCardScript : MonoBehaviour {
 			sprRnd.sprite = myCard;
 			myToken.SetActive(true);
 			CPUToken.SetActive(false);
-			playerText.text = "Ribbon";			
+			playerText.text = "Ribbon";
+			manualButton.SetActive(true);
 		}
 	}
 }
