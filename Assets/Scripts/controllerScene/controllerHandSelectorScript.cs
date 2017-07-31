@@ -42,24 +42,14 @@ public class controllerHandSelectorScript : MonoBehaviour {
 						scr.press();
 						break;
 					} else if (hitColliders[i].tag.Equals("resetButton")){
-						inputManager.inputman.resetButtons(playerId - 1);
+						hitColliders[i].gameObject.GetComponent<resetButtonScript>().press();						
 						break;
 					} else if (hitColliders[i].tag.Equals("arrowRight")){
-						playerId += 1;
-						if (playerId > 4){
-							playerId = 1;
-						}
-						buttons.GetComponent<buttonsIdScript>().id = playerId;
-						playerText.text = "Player " + playerId;
+						hitColliders[i].gameObject.GetComponent<playerArrowScript>().press();
 						break;
 					}
 					else if (hitColliders[i].tag.Equals("arrowLeft")){
-						playerId -= 1;
-						if (playerId < 1){
-							playerId = 4;
-						}
-						buttons.GetComponent<buttonsIdScript>().id = playerId;
-						playerText.text = "Player " + playerId;
+						hitColliders[i].gameObject.GetComponent<playerArrowScript>().press();
 						break;
 					}
 				}

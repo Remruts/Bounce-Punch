@@ -34,12 +34,15 @@ public class handSelectorScript : MonoBehaviour {
 			if (!myAnim.GetBool("close")){
 				myAnim.SetBool("close", true);
 			}
-			Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, 1f);
+			Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position + transform.up * 0.2f, 0.2f);
 			for (int i = 0; i < hitColliders.Length; ++i){
 				if (hitColliders[i].tag.Equals("token")){
 					tokenScript tkScr = hitColliders[i].gameObject.GetComponent<tokenScript>();
 					if (tkScr.playerId == playerId){
 						if (tokenTaken){
+							if (hitColliders[i].transform.parent != transform){
+								continue;
+							}
 							hitColliders[i].transform.parent = null;
 							tokenTaken = false;
 						} else {
@@ -74,6 +77,9 @@ public class handSelectorScript : MonoBehaviour {
 					}
 				} else if (hitColliders[i].tag.Equals("cputoken")){
 					if (tokenTaken){
+						if (hitColliders[i].transform.parent != transform){
+							continue;
+						}
 						hitColliders[i].transform.parent = null;
 						tokenTaken = false;
 					} else {

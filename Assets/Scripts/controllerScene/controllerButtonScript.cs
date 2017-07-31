@@ -54,6 +54,10 @@ public class controllerButtonScript : MonoBehaviour {
 		}
 	}
 
+	void OnMouseDown(){
+		press();
+	}
+
 	public void press(){
 		spr.color = Color.black;
 		StopCoroutine(GetButton());
