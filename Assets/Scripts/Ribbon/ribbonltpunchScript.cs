@@ -5,12 +5,16 @@ using UnityEngine;
 public class ribbonltpunchScript : lightPunchScript {
 
 	Animator myAnim;
+	public AudioClip swishsound;
+	AudioSource audioSource;
 
-	void Start(){		
+	void Start(){
 		myAnim = GetComponent<Animator> ();
+		audioSource = GetComponent<AudioSource>();
 	}
 
 	override public void ltPunch(){
 		myAnim.SetTrigger ("ltpunch");
+		audioSource.PlayOneShot(swishsound, settingsScript.settings.soundVolume);
 	}
 }

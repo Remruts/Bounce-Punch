@@ -9,7 +9,7 @@ public class handSelectorScript : MonoBehaviour {
 	bool tokenTaken = true;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		myAnim = GetComponent<Animator>();
 		myAnim.SetBool("close", true);
 	}

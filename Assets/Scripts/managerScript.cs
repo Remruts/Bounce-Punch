@@ -19,6 +19,9 @@ public class managerScript : MonoBehaviour {
 	[Space(5)]
 	public GameObject greatCircle;
 
+	public AudioClip explodeSound;
+	AudioSource audioSource;
+
 	bool playing = true;
 	bool paused = false;
 	int pausedPlayer = 0;
@@ -42,6 +45,8 @@ public class managerScript : MonoBehaviour {
 				Destroy(gameObject);
 			}
 		}
+
+		audioSource = GetComponent<AudioSource>();
 
 		playerNum = settingsScript.settings.getPlayerNumber();
 		settingsScript.settings.resetScores();
@@ -238,6 +243,10 @@ public class managerScript : MonoBehaviour {
 					StartCoroutine (endGame (transitionTime * 0.1f));
 				}
 			}
+		} else {
+			if (AudioListener.volume > 0){
+				AudioListener.volume -= 0.01f;
+			}
 		}
 	}
 
@@ -314,6 +323,9 @@ public class managerScript : MonoBehaviour {
 		if (!playing) {
 			return;
 		}
+
+		audioSource.PlayOneShot(explodeSound, settingsScript.settings.soundVolume);
+
 		playerDeaths[id-1] += 1;
 		settingsScript.settings.setDeaths(id - 1, playerDeaths[id-1]);
 	}

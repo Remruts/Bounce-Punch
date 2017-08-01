@@ -8,9 +8,13 @@ public class SMURDspecialScript : specialScript {
 	charScript myScript;
 	public GameObject swish;
 
+	public AudioClip swishSound;
+	AudioSource audioSource;
+
 	void Start () {
 		//myAnim = GetComponent<Animator> ();
 		myScript = GetComponent<charScript>();
+		audioSource = GetComponent<AudioSource>();
 	}
 
 	override public void special(){
@@ -20,6 +24,7 @@ public class SMURDspecialScript : specialScript {
 		rb.velocity = transform.right * 10f;
 		myScript.specialCharge = 0f;
 		Invoke("recharge", 1f);
+		audioSource.PlayOneShot(swishSound, settingsScript.settings.soundVolume);
 	}
 
 	void recharge(){

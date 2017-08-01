@@ -15,6 +15,9 @@ public class settingsScript : MonoBehaviour {
 	public int maxLives;		// maxLives that each player has
 	public int matchTime;		// match time in minutes. 0 for endless.
 
+	public float musicVolume = 1.0f;
+	public float soundVolume = 1.0f;
+
 	private int winner = -1;
 
 	int[] scores;

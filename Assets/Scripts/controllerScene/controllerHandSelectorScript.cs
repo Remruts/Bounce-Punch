@@ -34,7 +34,7 @@ public class controllerHandSelectorScript : MonoBehaviour {
 				Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position +transform.up * 0.2f, 0.2f);
 				for (int i = 0; i < hitColliders.Length; ++i){
 					if (hitColliders[i].tag.Equals("backButton")){
-						transitionScript.transition.level = "mainMenuScene";
+						transitionScript.transition.level = "optionsScene";
 						transitionScript.transition.startTransition(2f);
 						break;
 					} else if (hitColliders[i].tag.Equals("controllerButton")){
@@ -42,7 +42,7 @@ public class controllerHandSelectorScript : MonoBehaviour {
 						scr.press();
 						break;
 					} else if (hitColliders[i].tag.Equals("resetButton")){
-						hitColliders[i].gameObject.GetComponent<resetButtonScript>().press();						
+						hitColliders[i].gameObject.GetComponent<resetButtonScript>().press();
 						break;
 					} else if (hitColliders[i].tag.Equals("arrowRight")){
 						hitColliders[i].gameObject.GetComponent<playerArrowScript>().press();

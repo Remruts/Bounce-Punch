@@ -8,17 +8,21 @@ public class mummycatSpecialScript : specialScript {
 	public GameObject sparks;
 	public GameObject beam;
 
+	public AudioClip beamSound;
+	AudioSource audioSource;
+
+	GameObject laser;
 
 	void Start () {
 		myAnim = GetComponent<Animator> ();
+		audioSource = GetComponent<AudioSource>();
 	}
 
 	void Update(){
 		AnimatorStateInfo state = myAnim.GetCurrentAnimatorStateInfo(0);
 		if (!state.IsName ("special")){
-			Transform beam = transform.Find("beamGenerator(Clone)");
-			if (beam != null){
-				Destroy(beam.gameObject);
+			if (laser != null){
+				Destroy(laser);
 			}
 		}
 
@@ -39,10 +43,10 @@ public class mummycatSpecialScript : specialScript {
 
 		AnimatorStateInfo state = myAnim.GetCurrentAnimatorStateInfo(0);
 		if (state.IsName ("special") && gameObject.activeSelf){
-			GameObject laser = Instantiate (beam, transform.position + transform.right * 1f, transform.rotation) as GameObject;
+			laser = Instantiate (beam, transform.position + transform.right * 1f, transform.rotation) as GameObject;
 			laser.GetComponent<beamGeneratorScript>().hitter = gameObject;
-			laser.transform.parent = transform;
-
+			//laser.transform.parent = transform;
+			audioSource.PlayOneShot(beamSound, settingsScript.settings.soundVolume);
 		}
 	}
 }

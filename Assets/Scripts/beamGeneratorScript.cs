@@ -17,8 +17,10 @@ public class beamGeneratorScript : MonoBehaviour {
 		}
 	}
 
-	// Update is called once per frame
-	void Update () {
-
+	void Update(){
+		transform.position = hitter.transform.position + transform.right;
+		if (!hitter.activeSelf){
+			Destroy(gameObject);
+		}
 	}
 }

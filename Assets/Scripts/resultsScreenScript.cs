@@ -32,6 +32,9 @@ public class resultsScreenScript : MonoBehaviour {
 	}
 
 	void Update(){
+		if (AudioListener.volume < 1.0f){
+			AudioListener.volume += 0.01f;
+		}
 		for (int i=0; i<4; ++i){
 			if (inputManager.inputman.StartButton(i)){
 				SceneManager.LoadScene (nextScene);

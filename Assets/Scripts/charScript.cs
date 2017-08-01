@@ -64,10 +64,19 @@ public class charScript : MonoBehaviour {
 
 	bool dead = false;
 
+	AudioSource audioSource;
+	[Space(10)]
+	public AudioClip hurtSound;
+	//public AudioClip specialReadySound;
+	[Space(10)]
+	public string charName;
+	public Sprite portrait;
+
 	void Awake(){
 		myAnim = GetComponent<Animator> ();
 		rb = GetComponent<Rigidbody2D> ();
 		sprRenderer = GetComponent<SpriteRenderer> ();
+		audioSource = GetComponent<AudioSource>();
 
 		ltPunchScr = GetComponent<lightPunchScript>();
 		hvPunchScr = GetComponent<heavyPunchScript>();
@@ -201,13 +210,8 @@ public class charScript : MonoBehaviour {
 		if (sparks != null){
 			Destroy(sparks.gameObject);
 		}
-		Transform beam = transform.Find("beamGenerator(Clone)");
-		if (beam != null){
-			Destroy(beam.gameObject);
-		}
 
 		managerScript.manager.addDeath(playerId);
-
 
 		if (lastHitPlayer > 0) {
 			managerScript.manager.givePoints (lastHitPlayer, 1);
@@ -313,6 +317,7 @@ public class charScript : MonoBehaviour {
 					specialMeter += specialCharge;
 
 					if (specialMeter >= 1f) {
+						//audioSource.PlayOneShot(specialReadySound, settingsScript.settings.soundVolume);
 						specialMeter = 1f;
 						outlineColor.a = 1f;
 						outlineSize = 2f;
@@ -354,6 +359,8 @@ public class charScript : MonoBehaviour {
 					} else {
 						knockback /= 2;
 					}
+
+					audioSource.PlayOneShot(hurtSound, settingsScript.settings.soundVolume);
 
 					camScript.screen.shake (0.1f, 0.5f * knockback);
 

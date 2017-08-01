@@ -8,8 +8,12 @@ public class tricksterSpecialScript : specialScript {
 	public GameObject sparks;
 	public GameObject projectile;
 
+	public AudioClip laserSound;
+	AudioSource audioSource;
+
 	void Start () {
 		myAnim = GetComponent<Animator> ();
+		audioSource = GetComponent<AudioSource>();
 	}
 
 	override public void special(){
@@ -36,6 +40,7 @@ public class tricksterSpecialScript : specialScript {
 				laser.GetComponent<hitboxScript>().hitter = gameObject;
 				laser.GetComponent<Rigidbody2D>().velocity = direction * 5f;
 			}
+			audioSource.PlayOneShot(laserSound, settingsScript.settings.soundVolume);
 
 		}
 	}

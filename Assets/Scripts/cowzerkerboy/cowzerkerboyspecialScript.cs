@@ -9,9 +9,14 @@ public class cowzerkerboyspecialScript : specialScript {
 	charScript myScript;
 	GameObject parts;
 
+	public AudioClip specialSound;
+	public AudioClip sadSound;
+	AudioSource audioSource;
+
 	void Start () {
 		myAnim = GetComponent<Animator> ();
 		myScript = GetComponent<charScript>();
+		audioSource = GetComponent<AudioSource>();
 	}
 
 	override public void special(){
@@ -30,6 +35,8 @@ public class cowzerkerboyspecialScript : specialScript {
 		parts = Instantiate (fire, transform.position, Quaternion.identity) as GameObject;
 		parts.transform.parent = transform;
 
+		audioSource.PlayOneShot(specialSound, settingsScript.settings.soundVolume);
+
 	}
 
 	void returnToSadness(){
@@ -41,6 +48,8 @@ public class cowzerkerboyspecialScript : specialScript {
 		myScript.specialCharge = 0.25f;
 
 		myAnim.runtimeAnimatorController = Resources.Load("cowzerkerboyAnimator") as RuntimeAnimatorController;
+
+		audioSource.PlayOneShot(sadSound, settingsScript.settings.soundVolume);
 
 		Destroy(parts);
 	}

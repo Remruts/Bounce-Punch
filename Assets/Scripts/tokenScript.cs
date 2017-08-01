@@ -9,13 +9,15 @@ public class tokenScript : MonoBehaviour {
 	public TextMesh playerText;
 	public bool CPU = false;
 
+	public playerCardScript card;
+
 	void OnTriggerStay2D(Collider2D other){
 		if (transform.parent == null){
 			if (other.CompareTag("playerButton")){
-				playerButtonScript scr = other.gameObject.GetComponent<playerButtonScript>();
-				portrait.sprite = scr.portrait;
-				playerText.text = scr.characterName;
 
+				playerButtonScript scr = other.gameObject.GetComponent<playerButtonScript>();
+
+				card.random = false;
 				GameObject chr;
 				if (CPU){
 					chr =  scr.AICharacter;
@@ -28,8 +30,8 @@ public class tokenScript : MonoBehaviour {
 				randomButtonScript scr = other.gameObject.GetComponent<randomButtonScript>();
 				int seed = scr.getCharSeed();
 
-				portrait.sprite = scr.portrait;
-				playerText.text = "???";
+				card.random = true;
+
 				GameObject chr;
 				if (CPU){
 					chr = scr.AICharacter[seed];

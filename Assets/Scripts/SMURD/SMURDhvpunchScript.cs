@@ -8,8 +8,12 @@ public class SMURDhvpunchScript : heavyPunchScript {
 	public GameObject missile;
 	public float missileSpeed = 10.0f;
 
+	public AudioClip missileSound;
+	AudioSource audioSource;
+
 	void Start () {
 		myAnim = GetComponent<Animator> ();
+		audioSource = GetComponent<AudioSource>();
 	}
 
 	override public void hvPunch(){
@@ -24,6 +28,8 @@ public class SMURDhvpunchScript : heavyPunchScript {
 			GameObject projectile = Instantiate (missile, transform.position + transform.right * 1.0f, transform.rotation) as GameObject;
 			projectile.GetComponent<hitboxScript>().hitter = gameObject;
 			projectile.GetComponent<Rigidbody2D>().velocity = transform.right * missileSpeed;
+
+			audioSource.PlayOneShot(missileSound, settingsScript.settings.soundVolume);
 		}
 	}
 

@@ -6,9 +6,12 @@ public class ribbonspecialScript : specialScript {
 
 	Animator myAnim;
 	public GameObject sparks;
+	public AudioClip swishsound;
+	AudioSource audioSource;
 
 	void Start () {
 		myAnim = GetComponent<Animator> ();
+		audioSource = GetComponent<AudioSource>();
 	}
 
 	override public void special(){
@@ -18,6 +21,8 @@ public class ribbonspecialScript : specialScript {
 
 		GameObject parts = Instantiate (sparks, transform.position, Quaternion.identity) as GameObject;
 		parts.transform.parent = transform;
+
+		audioSource.PlayOneShot(swishsound, settingsScript.settings.soundVolume);
 
 	}
 }

@@ -6,6 +6,4 @@ public class playerButtonScript : MonoBehaviour {
 
 	public GameObject character;
 	public GameObject AICharacter;
-	public Sprite portrait;
-	public string characterName;
 }
