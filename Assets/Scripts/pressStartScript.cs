@@ -11,15 +11,19 @@ public class pressStartScript : MonoBehaviour {
 	bool active = true;
 	Text txt;
 	RectTransform img;
-	RectTransform menu;
+	Transform menu;
 	Vector2 menuStartPos;
 	float rate;
+
+	AudioSource audioSource;
+	public AudioClip sound;
 
 	// Use this for initialization
 	void Start () {
 		txt = GetComponent<Text>();
 		scr = GetComponent<bouncySpriteScript>();
 		img = GetComponent<RectTransform>();
+		audioSource = GetComponent<AudioSource>();
 		menuButtons.SetActive(false);
 	}
 
@@ -32,8 +36,10 @@ public class pressStartScript : MonoBehaviour {
 			titleAnim.SetTrigger("pressStart");
 
 			menuButtons.SetActive(true);
-			menu = menuButtons.GetComponent<RectTransform>();
-			menuStartPos = menu.anchoredPosition;
+			menu = menuButtons.transform;
+			menuStartPos = menu.position;
+
+			audioSource.PlayOneShot(sound, settingsScript.settings.soundVolume);
 		}
 
 		if (!active){
@@ -45,8 +51,8 @@ public class pressStartScript : MonoBehaviour {
 			matColor.a -= 2f * rate;
 			txt.color = matColor;
 
-			if (menu.anchoredPosition.x > 0){
-				menu.anchoredPosition = new Vector2(Mathf.Lerp(0, menuStartPos.x, txt.color.a), menuStartPos.y);
+			if (menu.position.x > 8){
+				menu.position = new Vector2(Mathf.Lerp(0, menuStartPos.x, txt.color.a), menuStartPos.y);
 			}
 
 			if (txt.color.a <= 0){

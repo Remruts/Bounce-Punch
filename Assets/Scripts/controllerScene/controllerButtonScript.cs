@@ -2,19 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class controllerButtonScript : MonoBehaviour {
+public class controllerButtonScript : buttonScript {
 
 	public enum Button {Attack, Block, Dodge, Special, Start, CW, CCW, CWSlow, CCWSlow};
 	public Button button;
 	public TextMesh txt;
 	int id = 1;
 
-	string buttonString = "";
-	SpriteRenderer spr;
+	bool pressed = false;
 
-	void Start(){
-		spr = GetComponent<SpriteRenderer>();
-	}
+	string buttonString = "";
 
 	void Update(){
 		id = transform.parent.gameObject.GetComponent<buttonsIdScript>().id;
@@ -54,14 +51,19 @@ public class controllerButtonScript : MonoBehaviour {
 		}
 	}
 
-	void OnMouseDown(){
-		press();
+	void OnMouseExit(){
+		if (!pressed){
+			spr.color = Color.white;
+		}
 	}
 
-	public void press(){
+	override public void press(){
+		audioSource.PlayOneShot(pressSound, settingsScript.settings.soundVolume);
+		
 		spr.color = Color.black;
 		StopCoroutine(GetButton());
 		StartCoroutine(GetButton());
+		pressed = true;
 	}
 
 	IEnumerator GetButton(){
@@ -104,6 +106,7 @@ public class controllerButtonScript : MonoBehaviour {
 						break;
 						}
 						finished = true;
+						pressed = false;
 						break;
 					}
 				}

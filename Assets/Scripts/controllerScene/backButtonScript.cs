@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class backButtonScript : MonoBehaviour {
+public class backButtonScript : buttonScript {
 
 	public string level = "mainMenuScene";
 
-	void OnMouseDown(){
+	override public void press(){
+		audioSource.PlayOneShot(pressSound, settingsScript.settings.soundVolume);
 		transitionScript.transition.level = level;
-		transitionScript.transition.startTransition(2f);
+		transitionScript.transition.startTransition(0.25f);
 	}
 }

@@ -34,8 +34,7 @@ public class controllerHandSelectorScript : MonoBehaviour {
 				Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position +transform.up * 0.2f, 0.2f);
 				for (int i = 0; i < hitColliders.Length; ++i){
 					if (hitColliders[i].tag.Equals("backButton")){
-						transitionScript.transition.level = "optionsScene";
-						transitionScript.transition.startTransition(2f);
+						hitColliders[i].gameObject.GetComponent<buttonScript>().press();
 						break;
 					} else if (hitColliders[i].tag.Equals("controllerButton")){
 						controllerButtonScript scr = hitColliders[i].gameObject.GetComponent<controllerButtonScript>();

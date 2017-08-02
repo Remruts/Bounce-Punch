@@ -7,16 +7,13 @@ public class musicArrowScript : buttonScript {
 	public bool left = false;
 	public TextMesh musicText;
 
-	SpriteRenderer spr;
-	void Start(){
-		spr = GetComponent<SpriteRenderer>();
-	}
-
 	void Update(){
 		musicText.text = (Mathf.Round(100 * settingsScript.settings.musicVolume)).ToString();
 	}
 
 	override public void press(){
+		audioSource.PlayOneShot(pressSound, settingsScript.settings.soundVolume);
+
 		if (left){
 			settingsScript.settings.musicVolume -= 0.1f;
 			if (settingsScript.settings.musicVolume < 0f){
@@ -34,9 +31,5 @@ public class musicArrowScript : buttonScript {
 
 	void reset(){
 		spr.color = Color.white;
-	}
-
-	void OnMouseDown(){
-		press();
 	}
 }

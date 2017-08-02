@@ -53,13 +53,11 @@ public class handSelectorScript : MonoBehaviour {
 						break;
 					}
 				} else if (hitColliders[i].tag.Equals("backButton")){
-					transitionScript.transition.level = "mainMenuScene";
-					transitionScript.transition.startTransition(2f);
+					hitColliders[i].gameObject.GetComponent<buttonScript>().press();
 					break;
 				}else if (hitColliders[i].tag.Equals("startButton")){
 					if (settingsScript.settings.getPlayerNumber() >= 2){
-						transitionScript.transition.level = "gameScene";
-						transitionScript.transition.startTransition(2f);
+						hitColliders[i].gameObject.GetComponent<buttonScript>().press();
 						break;
 					}
 				} else if (hitColliders[i].tag.Equals("autoButton")){
@@ -88,17 +86,8 @@ public class handSelectorScript : MonoBehaviour {
 						tokenTaken = true;
 					}
 					break;
-				} else if (hitColliders[i].tag.Equals("arrowRight")){
-					settingsScript.settings.matchTime += 30;
-					if (settingsScript.settings.matchTime > 990){
-						settingsScript.settings.matchTime = 30;
-					}
-					break;
-				} else if (hitColliders[i].tag.Equals("arrowLeft")){
-					settingsScript.settings.matchTime -= 30;
-					if (settingsScript.settings.matchTime < 30){
-						settingsScript.settings.matchTime = 990;
-					}
+				} else if (hitColliders[i].tag.Equals("button")){
+					hitColliders[i].gameObject.GetComponent<buttonScript>().press();
 					break;
 				}
 			}

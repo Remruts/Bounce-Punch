@@ -4,23 +4,16 @@ using UnityEngine;
 
 public class controlsButtonScript : buttonScript {
 
-	SpriteRenderer spr;
-	void Start(){
-		spr = GetComponent<SpriteRenderer>();
-	}
-
 	override public void press(){
+		audioSource.PlayOneShot(pressSound, settingsScript.settings.soundVolume);
+
 		transitionScript.transition.level = "controllerScene";
-		transitionScript.transition.startTransition(2f);
+		transitionScript.transition.startTransition(0.25f);
 		spr.color = Color.black;
 		Invoke("reset", 0.2f);
 	}
 
 	void reset(){
 		spr.color = Color.white;
-	}
-
-	void OnMouseDown(){
-		press();
 	}
 }

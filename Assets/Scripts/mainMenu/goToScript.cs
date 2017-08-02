@@ -2,18 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class creditsButtonScript : buttonScript {
+public class goToScript : buttonScript {
+
+	public string scene;
 
 	override public void press(){
 		audioSource.PlayOneShot(pressSound, settingsScript.settings.soundVolume);
-
-		transitionScript.transition.level = "creditsScene";
+		transitionScript.transition.setTransition(scene);
 		transitionScript.transition.startTransition(0.25f);
-		spr.color = Color.black;
-		Invoke("reset", 0.2f);
-	}
-
-	void reset(){
-		spr.color = Color.white;
 	}
 }

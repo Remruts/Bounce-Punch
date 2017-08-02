@@ -2,23 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class playerArrowScript : MonoBehaviour {
+public class playerArrowScript : buttonScript {
 	public controllerHandSelectorScript scr;
 	public TextMesh playerText;
 	public GameObject buttons;
 
 	public bool left = false;
 
-	SpriteRenderer spr;
-	void Start(){
-		spr = GetComponent<SpriteRenderer>();
-	}
+	override public void press(){
 
-	void OnMouseDown(){
-		press();
-	}
+		audioSource.PlayOneShot(pressSound, settingsScript.settings.soundVolume);
 
-	public void press(){
 		if (left){
 			scr.playerId -= 1;
 			if (scr.playerId < 1){

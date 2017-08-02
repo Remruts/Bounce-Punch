@@ -2,19 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class resetButtonScript : MonoBehaviour {
-
-	SpriteRenderer spr;
-	void Start(){
-		spr = GetComponent<SpriteRenderer>();
-	}
-
+public class resetButtonScript : buttonScript {
 	int id = 1;
-	void OnMouseDown(){
-		press();
-	}
 
-	public void press(){
+	override public void press(){
+		audioSource.PlayOneShot(pressSound, settingsScript.settings.soundVolume);
+
 		id = transform.parent.gameObject.GetComponent<buttonsIdScript>().id;
 		inputManager.inputman.resetButtons(id - 1);
 		spr.color = Color.black;
@@ -22,13 +15,6 @@ public class resetButtonScript : MonoBehaviour {
 	}
 
 	void reset(){
-		spr.color = Color.white;
-	}
-
-	void OnMouseUp(){
-		spr.color = Color.white;
-	}
-	void OnMouseExit(){
 		spr.color = Color.white;
 	}
 }

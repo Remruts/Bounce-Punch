@@ -7,7 +7,7 @@ public class resultsScreenScript : MonoBehaviour {
 
 	public GameObject resultsRectangle;
 	public GameObject star;
-	public string nextScene = "gameScene";
+	public string nextScene = "playerSelectScene";
 
 	// Use this for initialization
 	void Start () {
@@ -37,7 +37,8 @@ public class resultsScreenScript : MonoBehaviour {
 		}
 		for (int i=0; i<4; ++i){
 			if (inputManager.inputman.StartButton(i)){
-				SceneManager.LoadScene (nextScene);
+				transitionScript.transition.level = nextScene;
+				transitionScript.transition.startTransition(0.5f);
 			}
 		}
 	}
