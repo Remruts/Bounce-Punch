@@ -59,7 +59,7 @@ public class controllerButtonScript : buttonScript {
 
 	override public void press(){
 		audioSource.PlayOneShot(pressSound, settingsScript.settings.soundVolume);
-		
+
 		spr.color = Color.black;
 		StopCoroutine(GetButton());
 		StartCoroutine(GetButton());
@@ -72,6 +72,44 @@ public class controllerButtonScript : buttonScript {
 		while (!finished){
 			for (int j = 0; j < 20; ++j){
 				for (int i = 1; i < 5; ++i){
+					if (Input.inputString != ""){
+						buttonString = Input.inputString;
+						spr.color = Color.white;
+
+						switch(button){
+						case Button.Attack:
+							inputManager.inputman.setAttack(id-1, buttonString);
+						break;
+						case Button.Block:
+							inputManager.inputman.setBlock(id-1, buttonString);
+						break;
+						case Button.Dodge:
+							inputManager.inputman.setDodge(id-1, buttonString);
+						break;
+						case Button.Special:
+							inputManager.inputman.setSpecial(id-1, buttonString);
+						break;
+						case Button.Start:
+							inputManager.inputman.setStart(id-1, buttonString);
+						break;
+						case Button.CW:
+							inputManager.inputman.setCW(id-1, buttonString);
+						break;
+						case Button.CCW:
+							inputManager.inputman.setCCW(id-1, buttonString);
+						break;
+						case Button.CWSlow:
+							inputManager.inputman.setCWSlow(id-1, buttonString);
+						break;
+						case Button.CCWSlow:
+							inputManager.inputman.setCCWSlow(id-1, buttonString);
+						break;
+						}
+
+						finished = true;
+						pressed = false;
+						break;
+					}
 					if (Input.GetKeyDown ("joystick " + i + " button " + j)){
 						buttonString = "joystick " + id +" button " + j;
 						spr.color = Color.white;

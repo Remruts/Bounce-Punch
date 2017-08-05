@@ -206,6 +206,10 @@ public class charScript : MonoBehaviour {
 		transform.position = startPos;
 		dead = false;
 
+		if (marker != null) {
+			marker.SetActive(false);
+		}
+
 		Transform sparks = transform.Find("sparks(Clone)");
 		if (sparks != null){
 			Destroy(sparks.gameObject);
@@ -438,6 +442,11 @@ public class charScript : MonoBehaviour {
 
 	// launch at an angle
 	public void launch(float ang){
+
+		if (marker != null) {
+			marker.SetActive(true);
+		}
+
 		angle = ang;
 		transform.rotation = Quaternion.AngleAxis (angle, Vector3.forward);
 

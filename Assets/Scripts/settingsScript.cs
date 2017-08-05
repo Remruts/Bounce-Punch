@@ -12,11 +12,14 @@ public class settingsScript : MonoBehaviour {
 	public bool[] autoPaddles;
 
 	//match settings
+	[Space(10)]
+	public bool stockBattle = false;
 	public int maxLives;		// maxLives that each player has
 	public int matchTime;		// match time in minutes. 0 for endless.
-
+	[Space(10)]
 	public float musicVolume = 1.0f;
 	public float soundVolume = 1.0f;
+
 
 	private int winner = -1;
 

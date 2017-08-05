@@ -150,6 +150,13 @@ public class managerScript : MonoBehaviour {
 				startAngle += 360;
 			}
 			i++;
+
+			if (settingsScript.settings.stockBattle){
+				// Set score
+				playerPoints [j] = settingsScript.settings.maxLives;
+				pointCounters [j].text = playerPoints [j].ToString();
+				settingsScript.settings.setScore(j, playerPoints[j]);
+			}
 		}
 	}
 
@@ -227,17 +234,34 @@ public class managerScript : MonoBehaviour {
 					}
 				}
 
-				// update timer
-				if (currentTime > 0) {
-					currentTime -= Time.deltaTime;
-					timerText.text = currentTime.ToString ("F0");
-				} else {
-					//if match ended
-					if (currentTime < 0) {
-						currentTime = 0;
-					}
+				if (settingsScript.settings.stockBattle){
+					timerText.text = "";
+				} else{
+					// update timer
+					if (currentTime > 0) {
+						currentTime -= Time.deltaTime;
+						timerText.text = currentTime.ToString ("F0");
+					} else {
+						//if match ended
+						if (currentTime < 0) {
+							currentTime = 0;
+						}
 
-					timerText.text = "0";
+						timerText.text = "0";
+						playing = false;
+						Time.timeScale = 0.1f;
+						StartCoroutine (endGame (transitionTime * 0.1f));
+					}
+				}
+			}
+			if (settingsScript.settings.stockBattle){
+				int playerCount = 0;
+				for (int i=0; i < 4; ++i){
+					if (playerPoints[i] > 0){
+						playerCount++;
+					}
+				}
+				if (playerCount == 1){
 					playing = false;
 					Time.timeScale = 0.1f;
 					StartCoroutine (endGame (transitionTime * 0.1f));
@@ -273,18 +297,20 @@ public class managerScript : MonoBehaviour {
 	}
 
 	IEnumerator resetCharInTime(int id, float time){
-		yield return new WaitForSeconds(time);
-		activeChars[id - 1].SetActive (true);
+		if ((settingsScript.settings.stockBattle && playerPoints[id-1] > 0) || !settingsScript.settings.stockBattle){
+			yield return new WaitForSeconds(time);
+			activeChars[id - 1].SetActive (true);
 
-		charScript scr = activeChars[id-1].GetComponent<charScript>();
-		scr.life = scr.res;
-		scr.invensibilityTimer = 1.5f;
+			charScript scr = activeChars[id-1].GetComponent<charScript>();
+			scr.life = scr.res;
+			scr.invensibilityTimer = 1.5f;
 
-		Vector3 pos = (paddles[id-1].transform.position -
-			activeChars[id-1].transform.position).normalized;
+			Vector3 pos = (paddles[id-1].transform.position -
+				activeChars[id-1].transform.position).normalized;
 
-		float angle = Mathf.Atan2(pos.y, pos.x) * Mathf.Rad2Deg;
-		scr.launch(angle);
+			float angle = Mathf.Atan2(pos.y, pos.x) * Mathf.Rad2Deg;
+			scr.launch(angle);
+		}
 	}
 
 	public void pickWinner(){
@@ -324,6 +350,12 @@ public class managerScript : MonoBehaviour {
 			return;
 		}
 
+		if (settingsScript.settings.stockBattle){
+			playerPoints[id-1] -= 1;
+			pointCounters[id-1].text = playerPoints [id-1].ToString();
+			settingsScript.settings.setScore(id-1, playerPoints[id-1]);
+		}
+
 		audioSource.PlayOneShot(explodeSound, settingsScript.settings.soundVolume);
 
 		playerDeaths[id-1] += 1;
@@ -335,13 +367,15 @@ public class managerScript : MonoBehaviour {
 			return;
 		}
 
-		playerPoints [id-1] += points;
-		if (playerPoints [id - 1] < 0) {
-			playerPoints [id - 1] = 0;
-		}
-		pointCounters [id - 1].text = playerPoints [id - 1].ToString();
+		if (!settingsScript.settings.stockBattle){
+			playerPoints [id-1] += points;
+			if (playerPoints [id - 1] < 0) {
+				playerPoints [id - 1] = 0;
+			}
 
-		settingsScript.settings.setScore(id - 1, playerPoints[id-1]);
+			pointCounters [id - 1].text = playerPoints [id - 1].ToString();
+			settingsScript.settings.setScore(id - 1, playerPoints[id-1]);
+		}
 
 		if (points > 0) {
 			GameObject plus1obj = Instantiate(plus1Prefab,

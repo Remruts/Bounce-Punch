@@ -60,6 +60,7 @@ public class inputManager : MonoBehaviour {
 	}
 
 	public void setAttack(int id, string button){
+		swap(id, button, attackButton[id]);
 		attackButton[id] = button;
 	}
 
@@ -68,6 +69,7 @@ public class inputManager : MonoBehaviour {
 	}
 
 	public void setBlock(int id, string button){
+		swap(id, button, blockButton[id]);
 		blockButton[id] = button;
 	}
 
@@ -76,6 +78,7 @@ public class inputManager : MonoBehaviour {
 	}
 
 	public void setDodge(int id, string button){
+		swap(id, button, dodgeButton[id]);
 		dodgeButton[id] = button;
 	}
 
@@ -84,6 +87,7 @@ public class inputManager : MonoBehaviour {
 	}
 
 	public void setSpecial(int id, string button){
+		swap(id, button, specialButton[id]);
 		specialButton[id] = button;
 	}
 
@@ -92,6 +96,7 @@ public class inputManager : MonoBehaviour {
 	}
 
 	public void setStart(int id, string button){
+		swap(id, button, startButton[id]);
 		startButton[id] = button;
 	}
 
@@ -100,6 +105,7 @@ public class inputManager : MonoBehaviour {
 	}
 
 	public void setCW(int id, string button){
+		swap(id, button, CWButton[id]);
 		CWButton[id] = button;
 	}
 
@@ -108,6 +114,7 @@ public class inputManager : MonoBehaviour {
 	}
 
 	public void setCCW(int id, string button){
+		swap(id, button, CCWButton[id]);
 		CCWButton[id] = button;
 	}
 
@@ -116,6 +123,7 @@ public class inputManager : MonoBehaviour {
 	}
 
 	public void setCWSlow(int id, string button){
+		swap(id, button, CWSlowButton[id]);
 		CWSlowButton[id] = button;
 	}
 
@@ -124,6 +132,37 @@ public class inputManager : MonoBehaviour {
 	}
 
 	public void setCCWSlow(int id, string button){
+		swap(id, button, CCWSlowButton[id]);
 		CCWSlowButton[id] = button;
+	}
+
+	void swap(int id, string button, string swapString){
+		if (attackButton[id] == button){
+			attackButton[id] = swapString;
+		}
+		if (blockButton[id] == button){
+			blockButton[id] = swapString;
+		}
+		if (specialButton[id] == button){
+			specialButton[id] = swapString;
+		}
+		if (dodgeButton[id] == button){
+			dodgeButton[id] = swapString;
+		}
+		if (startButton[id] == button){
+			startButton[id] = swapString;
+		}
+		if (CWButton[id] == button){
+			CWButton[id] = swapString;
+		}
+		if (CCWButton[id] == button){
+			CCWButton[id] = swapString;
+		}
+		if (CWSlowButton[id] == button){
+			CWSlowButton[id] = swapString;
+		}
+		if (CCWSlowButton[id] == button){
+			CCWSlowButton[id] = swapString;
+		}
 	}
 }

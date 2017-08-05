@@ -8,14 +8,28 @@ public class timeArrowScript : buttonScript {
 
 	override public void press(){
 		if (left){
-			settingsScript.settings.matchTime -= 30;
-			if (settingsScript.settings.matchTime < 30){
-				settingsScript.settings.matchTime = 990;
+			if (settingsScript.settings.stockBattle){
+				settingsScript.settings.maxLives -= 1;
+				if (settingsScript.settings.maxLives < 1){
+					settingsScript.settings.maxLives = 99;
+				}
+			} else {
+				settingsScript.settings.matchTime -= 30;
+				if (settingsScript.settings.matchTime < 30){
+					settingsScript.settings.matchTime = 990;
+				}
 			}
 		} else{
-			settingsScript.settings.matchTime += 30;
-			if (settingsScript.settings.matchTime > 990){
-				settingsScript.settings.matchTime = 30;
+			if (settingsScript.settings.stockBattle){
+				settingsScript.settings.maxLives += 1;
+				if (settingsScript.settings.maxLives > 99){
+					settingsScript.settings.maxLives = 1;
+				}
+			} else {
+				settingsScript.settings.matchTime += 30;
+				if (settingsScript.settings.matchTime > 990){
+					settingsScript.settings.matchTime = 30;
+				}
 			}
 		}
 		audioSource.PlayOneShot(pressSound, settingsScript.settings.soundVolume);

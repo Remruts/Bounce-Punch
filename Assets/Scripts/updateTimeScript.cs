@@ -13,7 +13,11 @@ public class updateTimeScript : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		time = settingsScript.settings.matchTime;
+		if (settingsScript.settings.stockBattle){
+			time = settingsScript.settings.maxLives;
+		} else {
+			time = settingsScript.settings.matchTime;
+		}
 		if (time > 0){
 			t.text = time.ToString();
 			t.fontSize = 30;

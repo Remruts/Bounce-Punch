@@ -23,12 +23,16 @@ public class buttonScript : MonoBehaviour {
 	void OnTriggerEnter2D(Collider2D other){
 		if (other.CompareTag("hand")){
 			audioSource.PlayOneShot(selectSound, settingsScript.settings.soundVolume);
-			spr.color = selectedColor;
+			if (spr != null){
+				spr.color = selectedColor;
+			}
 		}
 	}
 
 	void OnTriggerExit2D(Collider2D other){
-		spr.color = Color.white;
+		if (spr != null){
+			spr.color = Color.white;
+		}
 	}
 
 	void OnMouseEnter(){
@@ -36,11 +40,15 @@ public class buttonScript : MonoBehaviour {
 	}
 
 	void OnMouseOver(){
-		spr.color = selectedColor;
+		if (spr != null){
+			spr.color = selectedColor;
+		}
 	}
 
 	void OnMouseExit(){
-		spr.color = Color.white;
+		if (spr != null){
+			spr.color = Color.white;
+		}
 	}
 
 	void OnMouseDown(){
