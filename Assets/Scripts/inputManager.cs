@@ -1,6 +1,9 @@
-﻿using System.Collections;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 public class inputManager : MonoBehaviour {
 
@@ -53,6 +56,10 @@ public class inputManager : MonoBehaviour {
 		CCWButton[i] = "joystick " + (i + 1) + " button 4";
 		CWSlowButton[i] = "joystick " + (i + 1) + " button 9";
 		CCWSlowButton[i] = "joystick " + (i + 1) + " button 8";
+	}
+
+	public bool AttackUp(int id){
+		return Input.GetKeyUp (attackButton[id]);
 	}
 
 	public bool Attack(int id){
@@ -165,4 +172,55 @@ public class inputManager : MonoBehaviour {
 			CCWSlowButton[id] = swapString;
 		}
 	}
+
+	public void Save(){
+		BinaryFormatter bf = new BinaryFormatter();
+		FileStream file = File.Create(Application.persistentDataPath + "/input.dat");
+
+		inputData data = new inputData();
+		data.attackButton = attackButton;
+		data.blockButton = blockButton;
+		data.specialButton = specialButton;
+		data.dodgeButton = dodgeButton;
+		data.startButton = startButton;
+		data.CWButton = CWButton;
+		data.CCWButton = CCWButton;
+		data.CWSlowButton = CWSlowButton;
+		data.CCWSlowButton = CCWSlowButton;
+
+		bf.Serialize(file, data);
+		file.Close();
+	}
+
+	public void Load(){
+		if (File.Exists(Application.persistentDataPath + "/input.dat")){
+			BinaryFormatter bf = new BinaryFormatter();
+			FileStream file = File.Open(Application.persistentDataPath + "/input.dat", FileMode.Open);
+			inputData data = (inputData) bf.Deserialize(file);
+			file.Close();
+
+			attackButton = data.attackButton;
+			blockButton = data.blockButton;
+			specialButton = data.specialButton;
+			dodgeButton = data.dodgeButton;
+			startButton = data.startButton;
+			CWButton = data.CWButton;
+			CCWButton = data.CCWButton;
+			CWSlowButton = data.CWSlowButton;
+			CCWSlowButton = data.CCWSlowButton;
+		}
+	}
+}
+
+[Serializable]
+class inputData{
+	public string[] attackButton;
+	public string[] blockButton;
+	public string[] specialButton;
+	public string[] dodgeButton;
+	public string[] startButton;
+	public string[] CWButton;
+	public string[] CCWButton;
+	public string[] CWSlowButton;
+	public string[] CCWSlowButton;
 }

@@ -8,6 +8,9 @@ public class controllerHandSelectorScript : MonoBehaviour {
 	public TextMesh playerText;
 	public GameObject buttons;
 
+	public Sprite[] markers;
+	public SpriteRenderer spr;
+
 	// Use this for initialization
 	void Start () {
 
@@ -24,13 +27,16 @@ public class controllerHandSelectorScript : MonoBehaviour {
 			float cX = Input.GetAxis("j"+j+"Horizontal");
 			float cY = -Input.GetAxis("j"+j+"Vertical");
 			if (Mathf.Abs (cX) > 0.05 || Mathf.Abs (cY) > 0.05) {
+				if (markers.Length > 1){
+					spr.sprite = markers[j-1];					
+				}
 				Vector3 newPos = transform.position + new Vector3(cX, cY, 0) * 1.5f;
 				newPos.x = Mathf.Clamp(newPos.x, -screenPos.x, screenPos.x);
 				newPos.y = Mathf.Clamp(newPos.y, -screenPos.y, screenPos.y);
 				transform.position = newPos;
 			}
 
-			if (Input.GetButtonDown ("j"+j+"Attack")) {
+			if (inputManager.inputman.Attack(j-1)) {
 				Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position +transform.up * 0.2f, 0.2f);
 				for (int i = 0; i < hitColliders.Length; ++i){
 					if (hitColliders[i].tag.Equals("backButton")){

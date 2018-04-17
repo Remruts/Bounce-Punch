@@ -14,6 +14,7 @@ public class mainMenuScript : MonoBehaviour {
 
 	void Start(){
 		audioSource = GetComponent<AudioSource>();
+		inputManager.inputman.Load();
 	}
 
 	// Update is called once per frame
@@ -41,7 +42,7 @@ public class mainMenuScript : MonoBehaviour {
 					audioSource.PlayOneShot(selectSound, settingsScript.settings.soundVolume);
 				}
 			}
-			if (Input.GetButtonDown ("j"+j+"Attack")){
+			if (inputManager.inputman.Attack(j-1)){
 				scripts[selected].press();
 			}
 		}

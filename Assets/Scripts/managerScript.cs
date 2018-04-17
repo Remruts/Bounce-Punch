@@ -14,6 +14,7 @@ public class managerScript : MonoBehaviour {
 	public GameObject Canvas;
 	[Space(5)]
 	public Text timerText;
+	public GameObject infotext;
 	public float respawnTime = 1f;
 	public float transitionTime = 6f;
 	[Space(5)]
@@ -210,6 +211,7 @@ public class managerScript : MonoBehaviour {
 		if (playing) {
 			// check pause
 			if (paused) {
+				infotext.SetActive(true);
 				for (int i = 0; i < 4; ++i){
 					if (inputManager.inputman.Attack(i) && inputManager.inputman.Block(i)){
 						paused = false;
@@ -225,6 +227,7 @@ public class managerScript : MonoBehaviour {
 				}
 				timerText.text = "BOUNCE\nPUNCH!";
 			} else {
+				infotext.SetActive(false);
 				for (int i = 0; i < playerNum; ++i) {
 					if (inputManager.inputman.StartButton(i)) {
 						paused = true;

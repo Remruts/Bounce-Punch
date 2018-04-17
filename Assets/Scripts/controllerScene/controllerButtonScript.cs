@@ -151,6 +151,7 @@ public class controllerButtonScript : buttonScript {
 			}
 			yield return null;
 		}
+		inputManager.inputman.Save();
 	}
 
 }

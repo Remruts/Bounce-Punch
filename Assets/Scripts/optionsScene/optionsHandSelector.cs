@@ -20,7 +20,7 @@ public class optionsHandSelector : MonoBehaviour {
 				transform.position = newPos;
 			}
 
-			if (Input.GetButtonDown ("j"+j+"Attack")) {
+			if (inputManager.inputman.Attack(j-1)) {
 				Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position +transform.up * 0.2f, 0.2f);
 				for (int i = 0; i < hitColliders.Length; ++i){
 					if (hitColliders[i].tag.Equals("backButton")){

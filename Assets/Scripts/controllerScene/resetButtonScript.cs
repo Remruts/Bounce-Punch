@@ -12,6 +12,7 @@ public class resetButtonScript : buttonScript {
 		inputManager.inputman.resetButtons(id - 1);
 		spr.color = Color.black;
 		Invoke("reset", 0.2f);
+		inputManager.inputman.Save();
 	}
 
 	void reset(){

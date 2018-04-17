@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class snapInView : MonoBehaviour {
 
 	public enum Pivot{TopRight, TopLeft, BottomRight, BottomLeft};

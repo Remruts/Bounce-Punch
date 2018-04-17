@@ -30,7 +30,7 @@ public class handSelectorScript : MonoBehaviour {
 			transform.position = newPos;
 		}
 
-		if (Input.GetButtonDown ("j" + playerId + "Attack")) {
+		if (inputManager.inputman.Attack(playerId-1)) {
 			if (!myAnim.GetBool("close")){
 				myAnim.SetBool("close", true);
 			}
@@ -92,7 +92,7 @@ public class handSelectorScript : MonoBehaviour {
 				}
 			}
 		}
-		if (Input.GetButtonUp ("j" + playerId + "Attack")) {
+		if (inputManager.inputman.AttackUp(playerId-1)) {
 			if (!tokenTaken){
 				myAnim.SetBool("close", false);
 			}
