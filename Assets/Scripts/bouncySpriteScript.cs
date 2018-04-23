@@ -28,14 +28,23 @@ public class bouncySpriteScript : MonoBehaviour {
 	private Vector2 imgPos;
 	private float t1, t2, t3, t4;
 
+	private Animator anim;
+
 	void Start(){
 		img = GetComponent<RectTransform>();
 		imgSize = img.sizeDelta;
 		imgPos = img.transform.position;
+		anim = GetComponent<Animator>();
 	}
 
 	// Update is called once per frame
 	void Update () {
+		if (anim){
+			if (anim.GetCurrentAnimatorStateInfo(0).normalizedTime < 1 || !anim.IsInTransition(0)){
+				imgPos = img.transform.position;
+			}
+		}
+
 		t1 = (1 + Mathf.Sin(Time.time * frequency))/2f;
 		float meh = Mathf.SmoothStep(-factor, 0, t1);
 		img.sizeDelta = imgSize - new Vector2(meh, meh);

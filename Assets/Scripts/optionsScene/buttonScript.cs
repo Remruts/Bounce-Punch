@@ -11,7 +11,7 @@ public class buttonScript : MonoBehaviour {
 
 	protected SpriteRenderer spr;
 
-	void Start(){
+	public void Start(){
 		spr = GetComponent<SpriteRenderer>();
 		audioSource = GetComponent<AudioSource>();
 	}

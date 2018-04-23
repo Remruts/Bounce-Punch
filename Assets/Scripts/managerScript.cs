@@ -8,7 +8,9 @@ public class managerScript : MonoBehaviour {
 
 	public static managerScript manager;
 	public GameObject paddlePrefab;
+	public GameObject bigPaddlePrefab;
 	public GameObject AIPaddlePrefab;
+	public GameObject bigAIPaddlePrefab;
 	public GameObject plus1Prefab;
 	public GameObject UIBarPrefab;
 	public GameObject Canvas;
@@ -26,6 +28,12 @@ public class managerScript : MonoBehaviour {
 	bool playing = true;
 	bool paused = false;
 	int pausedPlayer = 0;
+
+	float currentTimeScale = 1f;
+	float realTime = 0;
+	float hitStopTime = 0f;
+	float deltaTime = 0f;
+
 	int playerNum;
 	float currentTime = 0;
 
@@ -93,7 +101,7 @@ public class managerScript : MonoBehaviour {
 		UIBars = new GameObject[4];
 
 		int i = 0;
-		for (int j = 0; j < 4; j++){
+		for (int j = 0; j < settingsScript.settings.characters.Length; j++){
 
 			GameObject chara = settingsScript.settings.characters[j];
 
@@ -130,14 +138,22 @@ public class managerScript : MonoBehaviour {
 
 			// Instancio paleta
 			if (scr.CPU || settingsScript.settings.autoPaddles[j]){
-				paddles[j] = Instantiate(AIPaddlePrefab) as GameObject;
+				if (settingsScript.settings.bigPaddles[j]){
+					paddles[j] = Instantiate(bigAIPaddlePrefab) as GameObject;
+				} else {
+					paddles[j] = Instantiate(AIPaddlePrefab) as GameObject;
+				}
 				AIPaddleScript pd = paddles[j].GetComponent<AIPaddleScript>();
 				pd.target = c;
 				pd.setAngle(startAngle);
 				pd.radius = paddleRad;
 				paddles[j].GetComponent<selectSprite>().changeSprite(j);
 			} else {
-				paddles[j] = Instantiate(paddlePrefab) as GameObject;
+				if (settingsScript.settings.bigPaddles[j]){
+					paddles[j] = Instantiate(bigPaddlePrefab) as GameObject;
+				} else {
+					paddles[j] = Instantiate(paddlePrefab) as GameObject;
+				}
 				paddleScript pd = paddles[j].GetComponent<paddleScript>();
 				pd.setAngle(startAngle);
 				pd.radius = paddleRad;
@@ -223,13 +239,27 @@ public class managerScript : MonoBehaviour {
 				}
 				if (inputManager.inputman.StartButton(pausedPlayer)) {
 					paused = false;
-					Time.timeScale = 1f;
+					Time.timeScale = currentTimeScale;
+					realTime = Time.realtimeSinceStartup + deltaTime;
 				}
+				timerText.fontSize = 72;
 				timerText.text = "BOUNCE\nPUNCH!";
 			} else {
+				if (currentTimeScale < 0.1){
+					deltaTime = Time.realtimeSinceStartup - realTime;
+					if (deltaTime >= hitStopTime){
+						hitStopTime = 0f;
+						currentTimeScale = 1f;
+						if (playing){
+							Time.timeScale = 1f;
+						}
+					}
+				}
+
 				infotext.SetActive(false);
 				for (int i = 0; i < playerNum; ++i) {
 					if (inputManager.inputman.StartButton(i)) {
+						deltaTime = Time.realtimeSinceStartup - realTime;
 						paused = true;
 						pausedPlayer = i;
 						Time.timeScale = 0f;
@@ -242,7 +272,12 @@ public class managerScript : MonoBehaviour {
 				} else{
 					// update timer
 					if (currentTime > 0) {
-						currentTime -= Time.deltaTime;
+						if (currentTime <= 5.5){
+							timerText.fontSize = (int) (72 + 32 * (Mathf.Sin((Time.time + 0.5f) * 1.45f * Mathf.PI) + 1) );
+							currentTime -= Time.deltaTime/1.5f;
+						} else {
+							currentTime -= Time.deltaTime;
+						}
 						timerText.text = currentTime.ToString ("F0");
 					} else {
 						//if match ended
@@ -406,6 +441,14 @@ public class managerScript : MonoBehaviour {
 				Destroy (pad);
 			}
 		}
+	}
 
+	public void hitStop(float t){
+		if (playing){
+			currentTimeScale = 0f;
+			Time.timeScale = 0f;
+			realTime = Time.realtimeSinceStartup;
+			hitStopTime += t;
+		}
 	}
 }

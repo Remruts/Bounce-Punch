@@ -233,8 +233,18 @@ public class charScript : MonoBehaviour {
 	void idle(){
 
 		if (!CPU){
-			float cX = Input.GetAxis("j" + playerId + "Horizontal");
-			float cY = -Input.GetAxis("j" + playerId + "Vertical");
+			float cX = 0;
+			float cY = 0;
+
+			if (inputManager.inputman.keyboard[playerId-1]){
+				cX = inputManager.inputman.Right(playerId-1) ? 1 : 0;
+				cX -= inputManager.inputman.Left(playerId-1) ? 1 : 0;
+				cY = inputManager.inputman.Up(playerId-1) ? 1 : 0;
+				cY -= inputManager.inputman.Down(playerId-1) ? 1 : 0;
+			} else {
+				cX = Input.GetAxis("j" + playerId + "Horizontal");
+				cY = -Input.GetAxis("j" + playerId + "Vertical");
+			}
 
 			if (Mathf.Abs (cX) > 0.05 || Mathf.Abs (cY) > 0.05) {
 				angle = Mathf.Atan2 (cY, cX) * Mathf.Rad2Deg;
@@ -367,6 +377,7 @@ public class charScript : MonoBehaviour {
 					audioSource.PlayOneShot(hurtSound, settingsScript.settings.soundVolume);
 
 					camScript.screen.shake (0.1f, 0.5f * knockback);
+					managerScript.manager.hitStop(0.015f * knockback);
 
 					Transform father = other.transform.parent;
 
@@ -414,6 +425,7 @@ public class charScript : MonoBehaviour {
 					}
 
 					camScript.screen.shake (0.1f, 0.5f * knockback);
+					managerScript.manager.hitStop(0.015f * knockback);
 
 					float otherAngle = other.transform.rotation.eulerAngles.z;
 					if (inverted) {

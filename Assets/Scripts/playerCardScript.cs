@@ -16,6 +16,7 @@ public class playerCardScript : MonoBehaviour {
 	public TextMesh playerText;
 
 	public GameObject manualButton;
+	public GameObject bigButton;
 
 	public bool random = false;
 
@@ -38,6 +39,7 @@ public class playerCardScript : MonoBehaviour {
 				myToken.SetActive(false);
 				CPUToken.SetActive(true);
 				manualButton.SetActive(false);
+				bigButton.SetActive(true);
 			}
 		}
 	}
@@ -72,6 +74,7 @@ public class playerCardScript : MonoBehaviour {
 			myToken.SetActive(false);
 			CPUToken.SetActive(true);
 			manualButton.SetActive(false);
+			bigButton.SetActive(true);
 
 		} else if (sprRnd.sprite == CPUCard){
 			settingsScript.settings.characters[playerId-1] = null;
@@ -79,6 +82,7 @@ public class playerCardScript : MonoBehaviour {
 			sprRnd.sprite = ClosedCard;
 			myToken.SetActive(false);
 			CPUToken.SetActive(false);
+			bigButton.SetActive(false);
 			playerText.text = "";
 		} else {
 			settingsScript.settings.characters[playerId-1] = null;
@@ -89,6 +93,7 @@ public class playerCardScript : MonoBehaviour {
 			myToken.SetActive(true);
 			CPUToken.SetActive(false);
 			manualButton.SetActive(true);
+			bigButton.SetActive(true);
 		}
 	}
 }

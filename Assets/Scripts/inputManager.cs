@@ -19,6 +19,13 @@ public class inputManager : MonoBehaviour {
 	public string[] CWSlowButton;
 	public string[] CCWSlowButton;
 
+	public string[] upButton;
+	public string[] downButton;
+	public string[] leftButton;
+	public string[] rightButton;
+
+	public bool[] keyboard;
+
 	// Use this for initialization
 	void Awake () {
 		if (inputman == null){
@@ -41,6 +48,13 @@ public class inputManager : MonoBehaviour {
 		CWSlowButton = new string[4];
 		CCWSlowButton = new string[4];
 
+		upButton = new string[4];;
+		downButton = new string[4];;
+		leftButton = new string[4];;
+		rightButton = new string[4];;
+
+		keyboard = new bool[4];
+
 		for (int i = 0; i < 4; ++i){
 			resetButtons(i);
 		}
@@ -56,6 +70,13 @@ public class inputManager : MonoBehaviour {
 		CCWButton[i] = "joystick " + (i + 1) + " button 4";
 		CWSlowButton[i] = "joystick " + (i + 1) + " button 9";
 		CCWSlowButton[i] = "joystick " + (i + 1) + " button 8";
+
+		upButton[i] = "up";
+		downButton[i] = "down";
+		leftButton[i] = "left";
+		rightButton[i] = "right";
+
+		keyboard[i] = false;
 	}
 
 	public bool AttackUp(int id){
@@ -143,6 +164,46 @@ public class inputManager : MonoBehaviour {
 		CCWSlowButton[id] = button;
 	}
 
+	public bool Up(int id){
+		return Input.GetKey(upButton[id]);
+	}
+
+	public void setUp(int id, string button){
+		swap(id, button, upButton[id]);
+		upButton[id] = button;
+	}
+
+	public bool Down(int id){
+		return Input.GetKey(downButton[id]);
+	}
+
+	public void setDown(int id, string button){
+		swap(id, button, downButton[id]);
+		downButton[id] = button;
+	}
+
+	public bool Left(int id){
+		return Input.GetKey(leftButton[id]);
+	}
+
+	public void setLeft(int id, string button){
+		swap(id, button, leftButton[id]);
+		leftButton[id] = button;
+	}
+
+	public bool Right(int id){
+		return Input.GetKey(rightButton[id]);
+	}
+
+	public void setRight(int id, string button){
+		swap(id, button, rightButton[id]);
+		rightButton[id] = button;
+	}
+
+	public void toggleKeyboard(int id){
+		keyboard[id] = !keyboard[id];
+	}
+
 	void swap(int id, string button, string swapString){
 		if (attackButton[id] == button){
 			attackButton[id] = swapString;
@@ -171,6 +232,18 @@ public class inputManager : MonoBehaviour {
 		if (CCWSlowButton[id] == button){
 			CCWSlowButton[id] = swapString;
 		}
+		if (upButton[id] == button){
+			upButton[id] = swapString;
+		}
+		if (downButton[id] == button){
+			downButton[id] = swapString;
+		}
+		if (leftButton[id] == button){
+			leftButton[id] = swapString;
+		}
+		if (rightButton[id] == button){
+			rightButton[id] = swapString;
+		}
 	}
 
 	public void Save(){
@@ -187,6 +260,13 @@ public class inputManager : MonoBehaviour {
 		data.CCWButton = CCWButton;
 		data.CWSlowButton = CWSlowButton;
 		data.CCWSlowButton = CCWSlowButton;
+
+		data.upButton = upButton;
+		data.downButton = downButton;
+		data.leftButton = leftButton;
+		data.rightButton = rightButton;
+
+		data.keyboard = keyboard;
 
 		bf.Serialize(file, data);
 		file.Close();
@@ -208,6 +288,100 @@ public class inputManager : MonoBehaviour {
 			CCWButton = data.CCWButton;
 			CWSlowButton = data.CWSlowButton;
 			CCWSlowButton = data.CCWSlowButton;
+
+			upButton = data.upButton;
+			downButton = data.downButton;
+			leftButton = data.leftButton;
+			rightButton = data.rightButton;
+
+			keyboard = data.keyboard;
+
+			if (attackButton == null){
+				attackButton = new string[4];
+				for (int i=0; i<4; i++){
+					attackButton[i] = "joystick " + (i + 1) + " button 2";
+				}
+			}
+			if (blockButton == null){
+				blockButton = new string[4];
+				for (int i=0; i<4; i++){
+					blockButton[i] = "joystick " + (i + 1) + " button 0";
+				}
+			}
+			if (specialButton == null){
+				specialButton = new string[4];
+				for (int i=0; i<4; i++){
+					specialButton[i] = "joystick " + (i + 1) + " button 3";
+				}
+			}
+			if (dodgeButton == null){
+				dodgeButton = new string[4];
+				for (int i=0; i<4; i++){
+					dodgeButton[i] = "joystick " + (i + 1) + " button 1";
+				}
+			}
+			if (startButton == null){
+				startButton = new string[4];
+				for (int i=0; i<4; i++){
+					startButton[i] = "joystick " + (i + 1) + " button 7";
+				}
+			}
+			if (CWButton == null){
+				CWButton = new string[4];
+				for (int i=0; i<4; i++){
+					CWButton[i] = "joystick " + (i + 1) + " button 5";
+				}
+			}
+			if (CCWButton == null){
+				CCWButton = new string[4];
+				for (int i=0; i<4; i++){
+					CCWButton[i] = "joystick " + (i + 1) + " button 4";
+				}
+			}
+			if (CWSlowButton == null){
+				CWSlowButton = new string[4];
+				for (int i=0; i<4; i++){
+					CWSlowButton[i] = "joystick " + (i + 1) + " button 9";
+				}
+			}
+			if (CCWSlowButton == null){
+				CCWSlowButton = new string[4];
+				for (int i=0; i<4; i++){
+					CCWSlowButton[i] = "joystick " + (i + 1) + " button 8";
+				}
+			}
+
+			if (upButton == null){
+				upButton = new string[4];
+				for (int i=0; i<4; i++){
+					upButton[i] = "up";
+				}
+			}
+			if (downButton == null){
+				downButton = new string[4];
+				for (int i=0; i<4; i++){
+					downButton[i] = "down";
+				}
+			}
+			if (leftButton == null){
+				leftButton = new string[4];
+				for (int i=0; i<4; i++){
+					leftButton[i] = "left";
+				}
+			}
+			if (rightButton == null){
+				rightButton = new string[4];
+				for (int i=0; i<4; i++){
+					rightButton[i] = "right";
+				}
+			}
+
+			if (keyboard == null){
+				keyboard = new bool[4];
+				for (int i=0; i<4; i++){
+					keyboard[i] = false;
+				}
+			}
 		}
 	}
 }
@@ -223,4 +397,11 @@ class inputData{
 	public string[] CCWButton;
 	public string[] CWSlowButton;
 	public string[] CCWSlowButton;
+
+	public string[] upButton;
+	public string[] downButton;
+	public string[] leftButton;
+	public string[] rightButton;
+
+	public bool[] keyboard;
 }

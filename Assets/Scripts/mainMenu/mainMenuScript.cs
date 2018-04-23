@@ -23,6 +23,9 @@ public class mainMenuScript : MonoBehaviour {
 		for (int j=1; j<5; ++j){
 			if (canMove){
 				float axis = Input.GetAxis("j"+j+"Vertical");
+				
+				axis -= Input.GetKey("up") ? 1 : 0;
+				axis += Input.GetKey("down") ? 1 : 0;
 				if (Mathf.Abs(axis) > 0.05){
 					selected += Mathf.RoundToInt(Mathf.Sign(axis));
 					canMove = false;
@@ -42,8 +45,9 @@ public class mainMenuScript : MonoBehaviour {
 					audioSource.PlayOneShot(selectSound, settingsScript.settings.soundVolume);
 				}
 			}
-			if (inputManager.inputman.Attack(j-1)){
+			if (inputManager.inputman.Attack(j-1) || Input.GetKeyDown("return")){
 				scripts[selected].press();
+				return;
 			}
 		}
 

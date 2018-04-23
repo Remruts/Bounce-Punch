@@ -10,6 +10,7 @@ public class settingsScript : MonoBehaviour {
 
 	public GameObject[] characters;
 	public bool[] autoPaddles;
+	public bool[] bigPaddles;
 
 	//match settings
 	[Space(10)]
@@ -40,6 +41,11 @@ public class settingsScript : MonoBehaviour {
 		autoPaddles = new bool[4];
 		for (int i = 0; i < 4; ++i){
 			autoPaddles[i] = false;
+		}
+
+		bigPaddles = new bool[4];
+		for (int i = 0; i < 4; ++i){
+			bigPaddles[i] = true;
 		}
 	}
 
